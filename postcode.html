@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      #postcode {
+        position: fixed;
+        width: 100vw;
+        height: 100vh;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="postcode"></div>
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <script>
+      const postcode = document.getElementById("postcode");
+      new daum.Postcode({
+        oncomplete(e) {
+          document.getElementById("address").value = e.address;
+          geocoder.addressSearch(e.address, (a, o) => {
+            o === kakao.maps.services.Status.OK && map.relayout();
+            closePostcode();
+            map.setLevel(1);
+            displayMarker(new kakao.maps.LatLng(a[0].y, a[0].x), e.address);
+          });
+        },
+        width: "100%",
+        height: "100%",
+        animation: true,
+      }).embed(postcode);
+    </script>
+  </body>
+</html>

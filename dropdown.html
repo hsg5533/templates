@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>레이아웃</title>
+    <style>
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
+      ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      #header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 80px;
+        color: #555;
+      }
+      .nav {
+        width: 100%;
+        height: 80px;
+      }
+      .nav > ul {
+        height: 100%;
+        display: flex;
+        font-size: 22px;
+        font-weight: bold;
+        gap: 30px;
+        justify-content: center;
+        align-items: center;
+      }
+      .nav > ul > li {
+        text-align: center;
+      }
+      .sec {
+        width: 100%;
+        height: 100vh;
+      }
+      .sec1 {
+        background: #e0eafc;
+        background: -webkit-linear-gradient(to right, #cfdef3, #e0eafc);
+        background: linear-gradient(to right, #cfdef3, #e0eafc);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        gap: 50px;
+      }
+      .sec2 {
+        background: #ee9ca7;
+        background: -webkit-linear-gradient(to right, #ffdde1, #ee9ca7);
+        background: linear-gradient(to right, #ffdde1, #ee9ca7);
+      }
+      .sec3 {
+        background: #12c2e9;
+        background: -webkit-linear-gradient(
+          to right,
+          #f64f59,
+          #c471ed,
+          #12c2e9
+        );
+        background: linear-gradient(to right, #f64f59, #c471ed, #12c2e9);
+      }
+      .sec4 {
+        background: #000046;
+        background: -webkit-linear-gradient(to right, #1cb5e0, #000046);
+        background: linear-gradient(to right, #1cb5e0, #000046);
+      }
+
+      /* 뉴모피즘 공통 css */
+      .syl1 {
+        -webkit-border-radius: 50px;
+        border-radius: 30px;
+        background: #dfe3f0;
+        -webkit-box-shadow: 12px 12px 24px #b2b8c9, -12px -12px 24px #f0f8ff;
+        box-shadow: 12px 12px 24px #b2b8c9, -12px -12px 24px #f0f8ff;
+        font-size: 2em;
+      }
+
+      .logo {
+        padding: 0.5em;
+        margin-bottom: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .logo > img {
+        width: 60px;
+      }
+
+      /* search */
+      .search_box {
+        display: flex;
+        box-sizing: border-box;
+        padding: 0.5em;
+      }
+      .search_bar {
+        width: 400px;
+        height: 40px;
+        background: transparent;
+        border: none;
+        outline: none;
+        padding: 1.5em;
+      }
+      .search_btn {
+        background: transparent;
+        border: none;
+        font-size: 1em;
+      }
+
+      /* 2행 4열 그리드 박스 */
+      .sec1_box {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        grid-gap: 30px;
+      }
+      .box1 {
+        display: flex;
+        border-radius: 50%;
+        box-sizing: border-box;
+        overflow: hidden;
+        padding: 1em;
+        transition: all 0.5s;
+      }
+      .box1 > img {
+        width: 35px;
+        height: 35px;
+      }
+      .box1:hover {
+        background: #333;
+        transform: translateY(-15px);
+      }
+    </style>
+  </head>
+  <body>
+    <header id="header">
+      <nav class="nav">
+        <ul>
+          <li><a href="#sec1">sec1</a></li>
+          <li><a href="#sec2">sec2</a></li>
+          <li><a href="#sec3">sec3</a></li>
+          <li><a href="#sec4">sec4</a></li>
+        </ul>
+      </nav>
+    </header>
+    <main id="main">
+      <section id="sec1" class="sec sec1">
+        <form acrion="" name="">
+          <div class="search_box syl1">
+            <input type="search" class="search_bar" name="" id="" />
+            <button type="submit" class="search_btn">🔎</button>
+          </div>
+        </form>
+
+        <div class="sec1_box">
+          <div class="syl1 box1">⚽️</div>
+          <div class="syl1 box1">⚽️</div>
+          <div class="syl1 box1">⚽️</div>
+          <div class="syl1 box1">⚽️</div>
+          <div class="syl1 box1">⚽️</div>
+          <div class="syl1 box1">⚽️</div>
+          <div class="syl1 box1">⚽️</div>
+          <div class="syl1 box1">⚽️</div>
+        </div>
+      </section>
+      <section id="sec2" class="sec sec2"></section>
+      <section id="sec3" class="sec sec3"></section>
+      <section id="sec4" class="sec sec4"></section>
+    </main>
+    <footer id="footer"></footer>
+  </body>
+</html>

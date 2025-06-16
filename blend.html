@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>색상 블렌딩</title>
+
+    <!-- 구글 폰트 (Poppins 예시) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      /* 기본 설정 */
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Poppins", sans-serif;
+        background: linear-gradient(120deg, #d1f0f0, #f1e2ff);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        overflow: hidden; /* 원형 그래픽이 배경 밖을 넘어가도 스크롤이 생기지 않도록 */
+      }
+
+      /* 배경 원형 그래픽 (위쪽) */
+      .circle1,
+      .circle2 {
+        position: absolute;
+        border-radius: 50%;
+        z-index: 1; /* 컨테이너 뒤에 위치 */
+        opacity: 0.35;
+      }
+
+      .circle1 {
+        width: 700px;
+        height: 700px;
+        background: radial-gradient(#ffffff, #d1f0f0);
+        top: -350px;
+        left: -200px;
+      }
+
+      /* 배경 원형 그래픽 (아래쪽) */
+      .circle2 {
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(#ffffff, #f1e2ff);
+        bottom: -200px;
+        right: -150px;
+      }
+
+      /* 메인 컨테이너(Glassmorphism) */
+      .container {
+        position: relative;
+        z-index: 2; /* 원형 그래픽보다 위에 */
+        max-width: 600px;
+        width: 90%;
+        background: rgba(255, 255, 255, 0.35);
+        backdrop-filter: blur(18px);
+        border-radius: 20px;
+        box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+        padding: 40px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      /* 제목 */
+      .container h1 {
+        margin-bottom: 30px;
+        font-size: 28px;
+        font-weight: 600;
+        color: #333;
+      }
+
+      /* 컬러 선택 영역 */
+      .color-pickers {
+        display: flex;
+        gap: 40px; /* 컬러 선택기 간격 */
+        margin-bottom: 30px;
+        justify-content: center;
+        flex-wrap: wrap; /* 좁은 화면에서 줄바꿈 */
+      }
+
+      .picker-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .picker-wrapper label {
+        font-size: 14px;
+        font-weight: 600;
+        color: #444;
+        margin-bottom: 10px;
+      }
+
+      .picker-wrapper input[type="color"] {
+        width: 90px;
+        height: 90px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: transform 0.15s ease;
+      }
+
+      .picker-wrapper input[type="color"]:hover {
+        transform: scale(1.08);
+      }
+
+      /* 블렌딩 버튼 */
+      button {
+        padding: 14px 30px;
+        font-size: 18px;
+        font-weight: 600;
+        border: none;
+        border-radius: 30px;
+        color: #fff;
+        background: #6d59ef;
+        box-shadow: 0 4px 10px rgba(109, 89, 239, 0.3);
+        cursor: pointer;
+        transition: background-color 0.3s, box-shadow 0.3s, transform 0.2s;
+      }
+
+      button:hover {
+        background-color: #5947bf;
+        box-shadow: 0 6px 14px rgba(109, 89, 239, 0.4);
+        transform: translateY(-2px);
+      }
+
+      /* 결과 영역 */
+      .result-section {
+        margin-top: 30px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+      }
+
+      #result {
+        width: 140px;
+        height: 140px;
+        border-radius: 12px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        transition: background-color 0.3s ease;
+      }
+
+      .result-hex {
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+      }
+
+      /* 반응형 */
+      @media (max-width: 480px) {
+        .container {
+          padding: 20px;
+        }
+        .color-pickers {
+          gap: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 배경 원형 그래픽 -->
+    <div class="circle1"></div>
+    <div class="circle2"></div>
+
+    <!-- 메인 컨테이너 -->
+    <div class="container">
+      <h1>색상 블렌딩</h1>
+
+      <!-- 컬러 선택 영역 -->
+      <div class="color-pickers">
+        <div class="picker-wrapper">
+          <label for="color1">첫 번째 색상</label>
+          <input type="color" id="color1" value="#ff0000" />
+        </div>
+
+        <div class="picker-wrapper">
+          <label for="color2">두 번째 색상</label>
+          <input type="color" id="color2" value="#00ff00" />
+        </div>
+      </div>
+
+      <!-- 블렌딩 버튼 -->
+      <button onclick="blendColors()">블렌딩</button>
+
+      <!-- 결과 표시 -->
+      <div class="result-section">
+        <div id="result"></div>
+        <div class="result-hex" id="resultHex">#??????</div>
+      </div>
+    </div>
+
+    <script>
+      function blendColors() {
+        const color1 = document.getElementById("color1").value;
+        const color2 = document.getElementById("color2").value;
+
+        const resultColor = blend(color1, color2);
+        document.getElementById("result").style.backgroundColor = resultColor;
+        document.getElementById("resultHex").textContent = resultColor;
+      }
+
+      function blend(color1, color2) {
+        const c1 = hexToRgb(color1);
+        const c2 = hexToRgb(color2);
+
+        // 평균값으로 블렌딩
+        const blendedColor = {
+          r: Math.round((c1.r + c2.r) / 2),
+          g: Math.round((c1.g + c2.g) / 2),
+          b: Math.round((c1.b + c2.b) / 2),
+        };
+
+        return rgbToHex(blendedColor);
+      }
+
+      function hexToRgb(hex) {
+        const bigint = parseInt(hex.slice(1), 16);
+        const r = (bigint >> 16) & 255;
+        const g = (bigint >> 8) & 255;
+        const b = bigint & 255;
+        return { r, g, b };
+      }
+
+      function rgbToHex({ r, g, b }) {
+        return `#${((1 << 24) | (r << 16) | (g << 8) | b)
+          .toString(16)
+          .slice(1)}`;
+      }
+    </script>
+  </body>
+</html>

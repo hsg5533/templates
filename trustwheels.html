@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TrustWheels</title>
+    <style>
+      /* General styles */
+      body {
+        margin: 0;
+        font-family: "font";
+        background-image: url("./img/hero-9918f431.webp");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center; /* 중앙 정렬을 위한 추가 */
+        height: 100vh; /* 뷰포트 높이 */
+        overflow: hidden;
+      }
+
+      .container {
+        position: fixed;
+        overflow: hidden;
+        max-width: 400px;
+        max-height: 100%;
+        padding: 20px;
+        background-color: rgba(255, 255, 255, 0.8);
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        animation: fadeIn 0.5s ease-out;
+      }
+
+      h1,
+      h3 {
+        margin: 0;
+        text-align: center;
+        color: #f43f5e;
+        font-family: "font";
+      }
+
+      .input-form {
+        margin-top: 20px;
+      }
+
+      input[type="text"] {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+        transition: border-color 0.3s ease;
+      }
+
+      input[type="text"]:focus {
+        outline: none;
+        border-color: #f43f5e;
+      }
+
+      .checkbox-label {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .checkbox-label input {
+        display: none;
+      }
+
+      .checkmark {
+        width: 20px;
+        height: 20px;
+        background-color: #eee;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+
+      .checkmark:after {
+        content: "";
+        display: none;
+      }
+
+      .checkbox-label input:checked + .checkmark:after {
+        display: block;
+        width: 7px;
+        height: 14px;
+        border: solid #333;
+        border-width: 0 3px 3px 0;
+        transform: rotate(45deg);
+        margin-left: 6px;
+        margin-top: 2px;
+      }
+
+      .submit-button {
+        width: 100%;
+        padding: 15px;
+        background-color: #f43f5e;
+        border: none;
+        border-radius: 5px;
+        color: #fff;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      .submit-button:hover {
+        background-color: #333;
+      }
+
+      /* Animations */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Snackbar styles */
+      #snackbar {
+        visibility: hidden;
+        min-width: 250px;
+        margin-left: -125px;
+        background-color: #333;
+        color: #fff;
+        text-align: center;
+        border-radius: 2px;
+        padding: 16px;
+        position: fixed;
+        z-index: 1;
+        left: 50%;
+        bottom: 30px;
+        font-size: 17px;
+      }
+
+      #snackbar.show {
+        visibility: visible;
+        animation: snackbar-fadein 0.5s, snackbar-fadeout 0.5s 2.5s;
+      }
+
+      /* Snackbar animations */
+      @keyframes snackbar-fadein {
+        from {
+          bottom: 0;
+          opacity: 0;
+        }
+        to {
+          bottom: 30px;
+          opacity: 1;
+        }
+      }
+
+      @keyframes snackbar-fadeout {
+        from {
+          bottom: 30px;
+          opacity: 1;
+        }
+        to {
+          bottom: 0;
+          opacity: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h3>폐차 보상금보다! 중고차 매매보다!</h3>
+      <h3>해외 중고차 수출로 돈 더 받으세요!!</h3>
+      <h1>TrustWheels</h1>
+      <form class="input-form" id="feedback-form">
+        <input
+          type="text"
+          id="car"
+          placeholder="차량명을 입력해주세요 (ex. SM3)"
+          required
+        />
+        <input
+          type="text"
+          id="carNumber"
+          placeholder="차량번호를 입력해주세요 (ex. 12가1234)"
+          required
+        />
+        <input
+          type="text"
+          id="year"
+          placeholder="연식을 입력하세요 (ex. 2014년식)"
+          required
+        />
+        <input
+          type="text"
+          id="contact"
+          placeholder="연락처를 입력하세요 (ex. 010-1234-7890)"
+          required
+        />
+        <label class="checkbox-label">
+          <input type="checkbox" id="check" required />
+          <span class="checkmark"></span>
+          동의: 개인정보 수집/이용 동의
+        </label>
+        <button type="submit" class="submit-button">
+          상담 예약(1시간 이내)
+        </button>
+      </form>
+    </div>
+    <div id="snackbar"></div>
+    <script>
+      const form = document.getElementById("feedback-form");
+      const snackbar = document.getElementById("snackbar"); // 스낵바 가져오기
+
+      form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        const inputs = form.querySelectorAll('input[type="text"]');
+        const checkbox = form.querySelector("#check");
+
+        let isValid = true;
+
+        inputs.forEach((input) => {
+          if (input.value.trim() === "") {
+            isValid = false;
+            input.style.borderColor = "#f43f5e";
+          } else {
+            input.style.borderColor = "#ccc";
+          }
+        });
+
+        if (!checkbox.checked) {
+          isValid = false;
+          const checkboxLabel = form.querySelector(".checkbox-label");
+          checkboxLabel.style.color = "#f43f5e";
+        } else {
+          const checkboxLabel = form.querySelector(".checkbox-label");
+          checkboxLabel.style.color = "#333";
+        }
+
+        if (isValid) {
+          // Simulating form submission
+          isLoading(true);
+          setTimeout(() => {
+            isLoading(false);
+            showSnackbar("입력이 완료됐습니다.");
+            form.reset();
+          }, 1000);
+        }
+      });
+
+      function isLoading(status) {
+        const submitButton = form.querySelector(".submit-button");
+        if (status) {
+          submitButton.textContent = "상담 신청중...";
+          submitButton.disabled = true;
+        } else {
+          submitButton.textContent = "상담 예약(1시간 이내)";
+          submitButton.disabled = false;
+        }
+      }
+
+      function showSnackbar(message) {
+        snackbar.textContent = message;
+        snackbar.classList.add("show"); // show 클래스 추가
+        setTimeout(function () {
+          snackbar.classList.remove("show"); // show 클래스 제거
+        }, 3000);
+      }
+    </script>
+  </body>
+</html>

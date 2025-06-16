@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Physics Overlay Playground</title>
+    <!-- React, ReactDOM (개발용 UMD) 및 Matter.js -->
+    <script src="./js/matter.js"></script>
+    <script src="./js/babel.js"></script>
+    <script src="./js/react.js"></script>
+    <script src="./js/reactdom.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+
+      html,
+      body,
+      #root,
+      .container {
+        width: 100%;
+        height: 100%;
+      }
+
+      .physics {
+        position: absolute;
+        cursor: grab;
+      }
+      .physics:active {
+        cursor: grabbing;
+      }
+      /* 선반 등 물리엔진 충돌 대상으로 만들고 싶은 요소에 physics 클래스를 추가 */
+      .shelf {
+        left: 50%;
+        bottom: 150px;
+        width: 300px;
+        height: 30px;
+        background-color: #964b00;
+      }
+      .shelf2 {
+        position: absolute;
+        left: 20%;
+        width: 300px;
+        height: 30px;
+        background-color: #009632;
+      }
+      .box {
+        left: 10%;
+        width: 300px;
+        height: 300px;
+        background-color: #f3d83c;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <!-- Matter.js와 React를 이용한 시뮬레이션 스크립트 -->
+    <script type="text/babel">
+      const thickness = 10;
+      // 엔진 및 러너 생성
+      const engine = Matter.Engine.create();
+      const runner = Matter.Runner.create();
+      engine.positionIterations = 10;
+      engine.velocityIterations = 10;
+
+      function App() {
+        const containerRef = React.useRef(null);
+
+        React.useEffect(() => {
+          const container = containerRef.current;
+          const { width, height } = container.getBoundingClientRect();
+
+          // 벽 생성
+          const floor = Matter.Bodies.rectangle(
+            width / 2,
+            height + thickness / 2,
+            width,
+            thickness,
+            { isStatic: true }
+          );
+          const ceiling = Matter.Bodies.rectangle(
+            width / 2,
+            -thickness / 2,
+            width,
+            thickness,
+            { isStatic: true }
+          );
+          const leftWall = Matter.Bodies.rectangle(
+            -thickness / 2,
+            height / 2,
+            thickness,
+            height,
+            { isStatic: true }
+          );
+          const rightWall = Matter.Bodies.rectangle(
+            width + thickness / 2,
+            height / 2,
+            thickness,
+            height,
+            { isStatic: true }
+          );
+          Matter.Composite.add(engine.world, [
+            floor,
+            ceiling,
+            leftWall,
+            rightWall,
+          ]);
+
+          // .physics 요소들을 물리 객체로 변환
+          const objects = [];
+          document.querySelectorAll(".physics").forEach((el) => {
+            const rect = el.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            const body = Matter.Bodies.rectangle(
+              centerX,
+              centerY,
+              rect.width,
+              rect.height,
+              { isStatic: el.classList.contains("static") }
+            );
+            Matter.Composite.add(engine.world, body);
+            objects.push({ el, body, width: rect.width, height: rect.height });
+          });
+
+          // 마우스 제어
+          const mouse = Matter.Mouse.create(container);
+          const constraint = Matter.MouseConstraint.create(engine, {
+            mouse,
+            constraint: {
+              stiffness: 0.2,
+              angularStiffness: 0.3,
+              render: { visible: false },
+            },
+          });
+          mouse.pixelRatio = 1;
+          Matter.Composite.add(engine.world, constraint);
+
+          // 속도 제한
+          Matter.Events.on(engine, "beforeUpdate", () => {
+            const maxSpeed = 40;
+            objects.forEach((obj) => {
+              if (!obj.body.isStatic) {
+                const { x: vx, y: vy } = obj.body.velocity;
+                const speed = Math.hypot(vx, vy);
+                if (speed > maxSpeed) {
+                  const scale = maxSpeed / speed;
+                  Matter.Body.setVelocity(obj.body, {
+                    x: vx * scale,
+                    y: vy * scale,
+                  });
+                }
+              }
+            });
+          });
+
+          // 엔진 실행
+          Matter.Runner.run(runner, engine);
+
+          // 애니메이션 프레임 업데이트
+          const update = () => {
+            objects.forEach(({ el, body, width: w, height: h }) => {
+              if (!el.classList.contains("static")) {
+                el.style.left = `${body.position.x - w / 2}px`;
+                el.style.top = `${body.position.y - h / 2}px`;
+                el.style.transform = `rotate(${body.angle}rad)`;
+              }
+            });
+            requestAnimationFrame(update);
+          };
+          update();
+
+          // 리사이즈 핸들러
+          const handleResize = () => {
+            const { width, height } = container.getBoundingClientRect();
+            // 벽 업데이트
+            Matter.Body.setPosition(ceiling, {
+              x: width / 2,
+              y: -thickness / 2,
+            });
+            Matter.Body.setVertices(ceiling, [
+              { x: 0, y: 0 },
+              { x: width, y: 0 },
+              { x: width, y: thickness },
+              { x: 0, y: thickness },
+            ]);
+            Matter.Body.setPosition(floor, {
+              x: width / 2,
+              y: height + thickness / 2,
+            });
+            Matter.Body.setVertices(floor, [
+              { x: 0, y: height },
+              { x: width, y: height },
+              { x: width, y: height + thickness },
+              { x: 0, y: height + thickness },
+            ]);
+            Matter.Body.setPosition(leftWall, {
+              x: -thickness / 2,
+              y: height / 2,
+            });
+            Matter.Body.setVertices(leftWall, [
+              { x: 0, y: 0 },
+              { x: thickness, y: 0 },
+              { x: thickness, y: height },
+              { x: 0, y: height },
+            ]);
+            Matter.Body.setPosition(rightWall, {
+              x: width + thickness / 2,
+              y: height / 2,
+            });
+            Matter.Body.setVertices(rightWall, [
+              { x: width, y: 0 },
+              { x: width + thickness, y: 0 },
+              { x: width + thickness, y: height },
+              { x: width, y: height },
+            ]);
+            // 정적 요소(예: 선반)의 위치 및 치수 업데이트
+            objects.forEach((obj) => {
+              if (obj.body.isStatic) {
+                const rect = obj.el.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                Matter.Body.setPosition(obj.body, { x: centerX, y: centerY });
+                Matter.Body.setVertices(obj.body, [
+                  { x: rect.left, y: rect.top },
+                  { x: rect.left + rect.width, y: rect.top },
+                  { x: rect.left + rect.width, y: rect.top + rect.height },
+                  { x: rect.left, y: rect.top + rect.height },
+                ]);
+                obj.width = rect.width;
+                obj.height = rect.height;
+              }
+            });
+          };
+          window.addEventListener("resize", handleResize);
+
+          // 정리
+          return () => {
+            Matter.Runner.stop(runner);
+            Matter.Engine.clear(engine);
+            Matter.Composite.clear(engine.world, false);
+            window.removeEventListener("resize", handleResize);
+          };
+        }, []);
+
+        return (
+          <div ref={containerRef} className="container">
+            <div className="shelf physics static">선반</div>
+            <div className="shelf2 physics">선반</div>
+            <div className="box physics">박스</div>
+          </div>
+        );
+      }
+
+      const container = document.getElementById("root");
+      const root = ReactDOM.createRoot(container);
+      root.render(<App />);
+    </script>
+  </body>
+</html>

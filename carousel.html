@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
+        user-select: none;
+      }
+      body,
+      html {
+        width: 100%;
+        height: 100%;
+      }
+      #infinite-carousel {
+        --spacing: 30px;
+        display: hidden;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+      .carousel {
+        display: flex;
+        height: 100%;
+        padding: var(--spacing) 0;
+        will-change: transform;
+      }
+      .carousel-item {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 25vw;
+        flex-shrink: 0;
+        width: 100%;
+        height: 100%;
+        margin-right: var(--spacing);
+        background-color: var(--red);
+        border-radius: var(--spacing);
+        list-style: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="infinite-carousel">
+      <ul class="carousel">
+        <li class="draggable carousel-item" style="width: 35vw">1</li>
+        <li class="draggable carousel-item" style="width: 60vw">2</li>
+        <li class="draggable carousel-item" style="width: 85vw">3</li>
+        <li class="draggable carousel-item" style="width: 60vw">4</li>
+      </ul>
+    </div>
+    <script src="./js/anime.js"></script>
+    <script>
+      const { animate, createTimer, createDraggable, createAnimatable, utils } =
+        anime;
+
+      const [$carousel] = /** @type {Array<HTMLElement>} */ (
+        utils.$(".carousel")
+      );
+      $carousel.innerHTML += $carousel.innerHTML; // Clone the children for creating the illusion of infinity
+      const carouselItems = /** @type {Array<HTMLElement>} */ (
+        utils.$(".carousel-item")
+      );
+
+      /**
+       * @param  {Number} total
+       * @param  {HTMLElement} $el
+       * @return {Number}
+       */
+      const getTotalWidth = (total, $el) => {
+        const style = getComputedStyle($el);
+        const marginsWidth =
+          parseInt(style.marginLeft) + parseInt(style.marginRight);
+        return total + $el.offsetWidth + marginsWidth;
+      };
+
+      const carousel = {
+        width: carouselItems.reduce(getTotalWidth, 0),
+        speedX: 10,
+        wheelX: 0,
+        wheelY: 0,
+      };
+
+      const animatable = createAnimatable($carousel, {
+        x: 0,
+        modifier: (v) => utils.wrap(v, -carousel.width / 2, 0),
+      });
+
+      const { x } = animatable;
+
+      const draggable = createDraggable(carousel, {
+        trigger: "#infinite-carousel",
+        y: false,
+        onGrab: () => animate(carousel, { speedX: 0, duration: 500 }),
+        onRelease: () => animate(carousel, { speedX: 2, duration: 500 }),
+        onResize: () =>
+          (carousel.width = carouselItems.reduce(getTotalWidth, 0)),
+        releaseStiffness: 20,
+      });
+
+      createTimer({
+        onUpdate: () => {
+          x(
+            /** @type {Number} */ (x()) -
+              carousel.speedX +
+              draggable.deltaX -
+              carousel.wheelX -
+              carousel.wheelY
+          );
+        },
+      });
+
+      // Support mousewheel
+
+      const wheelDeltaAnim = animate(carousel, {
+        wheelY: 0, // We make sure the wheel delta always goes back to 0
+        wheelX: 0, // We make sure the wheel delta always goes back to 0
+        duration: 100,
+        autoplay: false,
+        ease: "out(4)",
+      });
+
+      /**
+       * @type {EventListener}
+       * @param {WheelEvent} e
+       */
+      function onWheel(e) {
+        e.preventDefault();
+        carousel.wheelY = utils.lerp(carousel.wheelY, e.deltaY, 0.2);
+        carousel.wheelX = utils.lerp(carousel.wheelX, e.deltaX, 0.2);
+        wheelDeltaAnim.refresh().restart();
+      }
+
+      $carousel.addEventListener("wheel", onWheel, { passive: false });
+    </script>
+  </body>
+</html>

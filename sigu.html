@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=19eab3a30f796b6d20716c28e1b57222&libraries=services,clusterer,drawing"></script>
+    <style>
+      body {
+        margin: 0px;
+      }
+      .overlaybox {
+        position: relative;
+        display: inline-block;
+        background: #284a6e no-repeat;
+        padding: 10px;
+        border-radius: 10px;
+        color: #fff;
+      }
+      #container {
+        overflow: hidden;
+        height: 100vh;
+        position: relative;
+      }
+      #mapWrapper {
+        width: 100%;
+        height: 100vh;
+        z-index: 1;
+      }
+      #rvWrapper {
+        width: 50%;
+        height: 100vh;
+        top: 0;
+        right: 0;
+        position: absolute;
+        z-index: 0;
+      }
+      #container.view_roadview #mapWrapper {
+        width: 50%;
+      }
+      #roadviewControl {
+        position: absolute;
+        top: 5px;
+        left: 5px;
+        width: 42px;
+        height: 42px;
+        z-index: 1;
+        cursor: pointer;
+        background: url(https://t1.daumcdn.net/localimg/localimages/07/2018/pc/common/img_search.png)
+          0 -450px no-repeat;
+      }
+      #roadviewControl.active {
+        background-position: 0 -350px;
+      }
+      #close {
+        position: absolute;
+        padding: 4px;
+        top: 5px;
+        left: 5px;
+        cursor: pointer;
+        background: #fff;
+        border-radius: 4px;
+        border: 1px solid #c8c8c8;
+        box-shadow: 0px 1px #888;
+      }
+      #close .img {
+        display: block;
+        background: url(https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/rv_close.png)
+          no-repeat;
+        width: 14px;
+        height: 14px;
+      }
+      .title {
+        font-weight: bold;
+        display: block;
+      }
+      .hAddr {
+        position: absolute;
+        right: 10px;
+        bottom: 10px;
+        border-radius: 2px;
+        background: #fff;
+        background: rgba(255, 255, 255, 0.8);
+        z-index: 1;
+        padding: 5px;
+      }
+      #address_menu {
+        position: absolute;
+        top: 7px;
+        left: 50px;
+        padding: 5px;
+        overflow-y: auto;
+        background: rgba(255, 255, 255, 0.7);
+        z-index: 1;
+        font-size: 12px;
+        border-radius: 10px;
+        display: inline-block;
+      }
+      #address_menu input[type="button"] {
+        margin-left: 5px;
+      }
+      #menu_wrap {
+        position: absolute;
+        top: 90px;
+        left: 10px;
+        bottom: 30px;
+        padding: 5px;
+        overflow-y: auto;
+        background: rgba(255, 255, 255, 0.7);
+        z-index: 1;
+        font-size: 12px;
+        border-radius: 10px;
+      }
+      .bg_white {
+        background: #fff;
+      }
+      #menu_wrap hr {
+        display: block;
+        height: 1px;
+        border: 0;
+        border-top: 2px solid #5f5f5f;
+        margin: 3px 0;
+      }
+      #menu_wrap .option {
+        text-align: center;
+      }
+      #menu_wrap .option p {
+        margin: 10px 0;
+      }
+      #menu_wrap .option button {
+        margin-left: 5px;
+      }
+      .MapWalker {
+        position: absolute;
+        margin: -26px 0 0 -51px;
+      }
+      .MapWalker .figure {
+        position: absolute;
+        width: 25px;
+        left: 38px;
+        top: -2px;
+        height: 39px;
+        background: url(https://t1.daumcdn.net/localimg/localimages/07/2018/pc/roadview_minimap_wk_2018.png) -298px -114px
+          no-repeat;
+      }
+      .MapWalker .angleBack {
+        width: 102px;
+        height: 52px;
+        background: url(https://t1.daumcdn.net/localimg/localimages/07/2018/pc/roadview_minimap_wk_2018.png) -834px -2px
+          no-repeat;
+      }
+      .MapWalker.m0 .figure {
+        background-position: -298px -114px;
+      }
+      .MapWalker.m1 .figure {
+        background-position: -335px -114px;
+      }
+      .MapWalker.m2 .figure {
+        background-position: -372px -114px;
+      }
+      .MapWalker.m3 .figure {
+        background-position: -409px -114px;
+      }
+      .MapWalker.m4 .figure {
+        background-position: -446px -114px;
+      }
+      .MapWalker.m5 .figure {
+        background-position: -483px -114px;
+      }
+      .MapWalker.m6 .figure {
+        background-position: -520px -114px;
+      }
+      .MapWalker.m7 .figure {
+        background-position: -557px -114px;
+      }
+      .MapWalker.m8 .figure {
+        background-position: -2px -114px;
+      }
+      .MapWalker.m9 .figure {
+        background-position: -39px -114px;
+      }
+      .MapWalker.m10 .figure {
+        background-position: -76px -114px;
+      }
+      .MapWalker.m11 .figure {
+        background-position: -113px -114px;
+      }
+      .MapWalker.m12 .figure {
+        background-position: -150px -114px;
+      }
+      .MapWalker.m13 .figure {
+        background-position: -187px -114px;
+      }
+      .MapWalker.m14 .figure {
+        background-position: -224px -114px;
+      }
+      .MapWalker.m15 .figure {
+        background-position: -261px -114px;
+      }
+      .MapWalker.m0 .angleBack {
+        background-position: -834px -2px;
+      }
+      .MapWalker.m1 .angleBack {
+        background-position: -938px -2px;
+      }
+      .MapWalker.m2 .angleBack {
+        background-position: -1042px -2px;
+      }
+      .MapWalker.m3 .angleBack {
+        background-position: -1146px -2px;
+      }
+      .MapWalker.m4 .angleBack {
+        background-position: -1250px -2px;
+      }
+      .MapWalker.m5 .angleBack {
+        background-position: -1354px -2px;
+      }
+      .MapWalker.m6 .angleBack {
+        background-position: -1458px -2px;
+      }
+      .MapWalker.m7 .angleBack {
+        background-position: -1562px -2px;
+      }
+      .MapWalker.m8 .angleBack {
+        background-position: -2px -2px;
+      }
+      .MapWalker.m9 .angleBack {
+        background-position: -106px -2px;
+      }
+      .MapWalker.m10 .angleBack {
+        background-position: -210px -2px;
+      }
+      .MapWalker.m11 .angleBack {
+        background-position: -314px -2px;
+      }
+      .MapWalker.m12 .angleBack {
+        background-position: -418px -2px;
+      }
+      .MapWalker.m13 .angleBack {
+        background-position: -522px -2px;
+      }
+      .MapWalker.m14 .angleBack {
+        background-position: -626px -2px;
+      }
+      .MapWalker.m15 .angleBack {
+        background-position: -730px -2px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container">
+      <div id="rvWrapper">
+        <!-- roadview 요소와 close 버튼은 여기에 있음 -->
+        <div id="roadview" style="width: 100%; height: 100vh"></div>
+        <div id="close" title="로드뷰닫기" onclick="toggleMapWrapper(true)">
+          <span class="img"></span>
+        </div>
+      </div>
+      <div id="mapWrapper">
+        <!-- 지도 요소와 roadviewControl 버튼을 여기로 이동 -->
+        <div id="map" style="width: 100%; height: 100vh"></div>
+        <div id="roadviewControl" onclick="setRoadviewRoad()"></div>
+      </div>
+      <!-- id가 "address_menu"인 요소를 id가 "roadviewControl"인 요소 옆으로 이동 -->
+      <div id="address_menu">
+        <input type="text" id="address" placeholder="주소" size="50" readonly />
+        <input type="button" onclick="DaumPostcode()" value="주소검색" />
+      </div>
+    </div>
+    <script>
+      let overlayOn = false;
+      const marker = new kakao.maps.Marker();
+      const infowindow = new kakao.maps.InfoWindow();
+      const rvClient = new kakao.maps.RoadviewClient();
+      const zoomControl = new kakao.maps.ZoomControl();
+      const geocoder = new kakao.maps.services.Geocoder();
+      const customOverlay = new kakao.maps.CustomOverlay();
+      const mapTypeControl = new kakao.maps.MapTypeControl();
+      const mapCenter = new kakao.maps.LatLng(33.45042, 126.57091);
+      const rv = new kakao.maps.Roadview(document.getElementById("roadview"));
+      const map = new kakao.maps.Map(document.getElementById("map"), {
+        center: mapCenter,
+        level: 12,
+      });
+      class MapWalker {
+        constructor(e) {
+          const a = document.createElement("div"),
+            o = document.createElement("div"),
+            n = document.createElement("div");
+          (a.className = "MapWalker"),
+            (o.className = "figure"),
+            (n.className = "angleBack"),
+            a.appendChild(n),
+            a.appendChild(o);
+          const r = new kakao.maps.CustomOverlay({
+            position: e,
+            content: a,
+            yAnchor: 1,
+          });
+          (this.walker = r), (this.content = a);
+        }
+        setAngle(e) {
+          for (var a = 0; a < 16; a++)
+            if (e > 22.5 * a && e < 22.5 * (a + 1)) {
+              var o = "m" + a;
+              (this.content.className = this.content.className.split(" ")[0]),
+                (this.content.className += " " + o);
+              break;
+            }
+        }
+        setPosition(e) {
+          this.walker.setPosition(e);
+        }
+        setMap(e) {
+          this.walker.setMap(e);
+        }
+      }
+      function getCurrentPosition() {
+        return new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(
+            (position) =>
+              resolve({
+                lat: position.coords.latitude,
+                lng: position.coords.longitude,
+              }),
+            (error) => reject(error),
+            { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+          );
+        });
+      }
+      function centroid(points) {
+        if (points.length == 2) {
+          return new kakao.maps.LatLng(
+            (points[0].x + points[1].x) / 2,
+            (points[0].y + points[1].y) / 2
+          );
+        } else {
+          let sumX = 0,
+            sumY = 0,
+            sumArea = 0,
+            current,
+            previous;
+          for (
+            let currentIndex = 0, previousIndex = points.length - 1;
+            currentIndex < points.length;
+            previousIndex = currentIndex++
+          ) {
+            current = points[currentIndex];
+            previous = points[previousIndex];
+            let areaProduct = current.y * previous.x - previous.y * current.x;
+            sumX += (current.x + previous.x) * areaProduct;
+            sumY += (current.y + previous.y) * areaProduct;
+            sumArea += 3 * areaProduct;
+          }
+          return new kakao.maps.LatLng(sumX / sumArea, sumY / sumArea);
+        }
+      }
+      function setPolygon(e, a) {
+        const o = new kakao.maps.Polygon({
+          name: e.name,
+          path: e.path,
+          strokeWeight: 2,
+          strokeColor: "#004c80",
+          strokeOpacity: 0.8,
+          fillColor: "#fff",
+          fillOpacity: 0.1,
+        });
+        kakao.maps.event.addListener(o, "mouseover", () => {
+          o.setOptions({ fillColor: "#09f" }),
+            customOverlay.setPosition(centroid(a)),
+            customOverlay.setContent(
+              "<div class='overlaybox'>" + e.name + "</div>"
+            ),
+            customOverlay.setMap(map);
+        }),
+          kakao.maps.event.addListener(o, "mouseout", () => {
+            o.setOptions({ fillColor: "#fff" }), customOverlay.setMap(null);
+          }),
+          o.setMap(map);
+      }
+      function getPolycode(e) {
+        const a = [],
+          o = e.geometry;
+        if ("Polygon" == o.type) {
+          var n = o.coordinates[0],
+            r = { name: e.properties.adm_nm, path: [] };
+          for (var t in n)
+            a.push({ x: s[t][1], y: s[t][0] }),
+              r.path.push(new kakao.maps.LatLng(n[t][1], n[t][0]));
+          setPolygon(r, a);
+        } else if ("MultiPolygon" == o.type)
+          for (var t in o.coordinates) {
+            var s = o.coordinates[t],
+              r = { name: e.properties.adm_nm, path: [] };
+            for (var i in s[0])
+              a.push({ x: s[0][i][1], y: s[0][i][0] }),
+                r.path.push(new kakao.maps.LatLng(s[0][i][1], s[0][i][0]));
+            setPolygon(r, a);
+          }
+      }
+      function toggleMapWrapper(e) {
+        e
+          ? ((container.className = ""), map.relayout())
+          : -1 === container.className.indexOf("view_roadview") &&
+            ((container.className = "view_roadview"), map.relayout());
+      }
+      function toggleRoadview(e) {
+        rvClient.getNearestPanoId(e, 50, (a) => {
+          null === a
+            ? toggleMapWrapper(true, e)
+            : (toggleMapWrapper(false, e), rv.setPanoId(a, e));
+        });
+      }
+      function toggleOverlay(e) {
+        e
+          ? ((overlayOn = true),
+            map.addOverlayMapTypeId(kakao.maps.MapTypeId.ROADVIEW),
+            toggleRoadview(map.getCenter()))
+          : ((overlayOn = false),
+            map.removeOverlayMapTypeId(kakao.maps.MapTypeId.ROADVIEW));
+      }
+      function setRoadviewRoad() {
+        const e = document.getElementById("roadviewControl");
+        -1 === e.className.indexOf("active")
+          ? ((e.className = "active"),
+            toggleOverlay(true),
+            marker.setMap(null),
+            infowindow.setMap(null),
+            mapWalker.setMap(map))
+          : ((e.className = ""),
+            toggleOverlay(false),
+            toggleMapWrapper(true),
+            mapWalker.setMap(null));
+      }
+      function displayMarker(e, a) {
+        const o = new kakao.maps.Marker({ map: map, position: e });
+        new kakao.maps.InfoWindow({ content: a }).open(map, o),
+          map.setCenter(e);
+      }
+      function DaumPostcode() {
+        new daum.Postcode({
+          oncomplete(e) {
+            (document.getElementById("address").value = e.address),
+              geocoder.addressSearch(e.address, (a, o) => {
+                o === kakao.maps.services.Status.OK &&
+                  (map.relayout(),
+                  map.setLevel(1),
+                  displayMarker(
+                    new kakao.maps.LatLng(a[0].y, a[0].x),
+                    e.address
+                  ));
+              });
+          },
+        }).open();
+      }
+      const mapWalker = new MapWalker(mapCenter);
+      map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
+      map.addControl(mapTypeControl, kakao.maps.ControlPosition.TOPRIGHT);
+      getCurrentPosition().then((e) => {
+        displayMarker(new kakao.maps.LatLng(e.lat, e.lng), "현재위치");
+      });
+      kakao.maps.event.addListener(map, "click", (e) => {
+        overlayOn
+          ? toggleRoadview(e.latLng)
+          : geocoder.coord2Address(
+              e.latLng.getLng(),
+              e.latLng.getLat(),
+              (a, o) => {
+                if (o === kakao.maps.services.Status.OK) {
+                  let n = a[0].road_address
+                      ? "<div>도로명주소 : " +
+                        a[0].road_address.address_name +
+                        "</div>"
+                      : "",
+                    r =
+                      '<div class="bAddr"><span class="title">법정동 주소정보</span>' +
+                      (n +=
+                        "<div>지번 주소 : " +
+                        a[0].address.address_name +
+                        "</div>") +
+                      "</div>";
+                  marker.setPosition(e.latLng),
+                    marker.setMap(map),
+                    infowindow.setContent(r),
+                    infowindow.open(map, marker);
+                }
+              }
+            );
+      });
+      kakao.maps.event.addListener(rv, "viewpoint_changed", () => {
+        const e = rv.getViewpoint();
+        mapWalker.setAngle(e.pan);
+      });
+      kakao.maps.event.addListener(rv, "position_changed", () => {
+        const e = rv.getPosition();
+        mapWalker.setPosition(e), map.setCenter(e);
+        map.setCenter(e);
+      });
+      fetch("https://hsg5533.github.io/hang-jeong-dong/json/ver20250401.json")
+        .then((response) => response.json())
+        .then((data) =>
+          data.features.forEach((feature) => getPolycode(feature))
+        )
+        .catch((error) => console.error(error));
+    </script>
+  </body>
+</html>

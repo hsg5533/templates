@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      body {
+        margin: 20px 0 0 20px;
+        font-size: 14px;
+        font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
+      }
+      #source-calendar,
+      #destination-calendar {
+        float: left;
+        width: 600px;
+        margin: 0 20px 20px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="source-calendar"></div>
+    <div id="destination-calendar"></div>
+    <script src="./js/fullcalendar.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const srcCalendar = new FullCalendar.Calendar(
+          document.getElementById("source-calendar"),
+          {
+            editable: true,
+            initialDate: "2023-01-12",
+            events: [
+              {
+                title: "event1",
+                start: "2023-01-11T10:00:00",
+                end: "2023-01-11T16:00:00",
+              },
+              {
+                title: "event2",
+                start: "2023-01-13T10:00:00",
+                end: "2023-01-13T16:00:00",
+              },
+            ],
+            eventLeave: function (info) {
+              console.log("event left!", info.event);
+            },
+          }
+        );
+        const destCalendar = new FullCalendar.Calendar(
+          document.getElementById("destination-calendar"),
+          {
+            initialDate: "2023-01-12",
+            editable: true,
+            droppable: true, // will let it receive events!
+            eventReceive: function (info) {
+              console.log("event received!", info.event);
+            },
+          }
+        );
+
+        srcCalendar.render();
+        destCalendar.render();
+      });
+    </script>
+  </body>
+</html>

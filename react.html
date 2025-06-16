@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="./js/dayjs.js"></script>
+    <script src="./js/dayjsko.js"></script>
+    <script src="./js/babel.js"></script>
+    <script src="./js/react.js"></script>
+    <script src="./js/reactdom.js"></script>
+    <style>
+      @font-face {
+        font-family: "IBMPlexSansKR-Regular";
+        src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-07@1.0/IBMPlexSansKR-Regular.woff")
+          format("woff");
+        font-weight: normal;
+        font-style: normal;
+      }
+
+      * {
+        box-sizing: border-box;
+        font-family: "IBMPlexSansKR-Regular", sans-serif;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+
+      body {
+        margin: 0;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 18px;
+      }
+
+      input {
+        width: 250px;
+        padding: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+
+      button {
+        background: transparent;
+      }
+
+      input,
+      button {
+        color: #808080;
+        font-size: 15px;
+      }
+
+      input:focus,
+      button:focus {
+        outline: none;
+      }
+
+      header {
+        display: flex;
+        width: 100%;
+        padding: 20px 0 20px 20px;
+        color: #fff;
+        background-color: #000;
+      }
+
+      .logo {
+        font-size: 28px;
+      }
+
+      .post-wrapper {
+        margin-bottom: 30px;
+      }
+
+      .post {
+        display: flex;
+        align-items: center;
+        font-size: 16px;
+        padding: 20px 0 20px 20px;
+        border-bottom: 1px solid #808080;
+      }
+
+      .post-title {
+        margin-right: 15px;
+        cursor: pointer;
+      }
+
+      .post-date {
+        margin-right: 15px;
+      }
+
+      .post-like {
+        margin-right: 15px;
+      }
+
+      .post-manage-wrapper {
+        display: flex;
+        flex-flow: column;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 30px;
+      }
+
+      .post-manage {
+        margin-bottom: 20px;
+      }
+
+      .input-wrapper {
+        margin-bottom: 20px;
+      }
+
+      .input-title {
+        margin-right: 10px;
+      }
+
+      .content-wrapper {
+        padding: 40px 0 40px 20px;
+        color: #000;
+        background-color: #ccc;
+      }
+
+      .content-title {
+        margin-bottom: 15px;
+        font-size: 19px;
+      }
+
+      .content-date {
+        display: block;
+        margin-bottom: 15px;
+        font-size: 17px;
+      }
+
+      footer {
+        position: fixed;
+        bottom: 0;
+        display: flex;
+        align-items: flex-end;
+        width: 100%;
+        padding: 20px 0 20px 20px;
+        color: #fff;
+        background-color: #000;
+      }
+
+      .project-name {
+        margin-right: 20px;
+        font-size: 20px;
+      }
+
+      .project-desc {
+        font-size: 13px;
+      }
+
+      .white-button {
+        padding: 3px 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #fff;
+        cursor: pointer;
+      }
+
+      .black-button {
+        padding: 3px 5px;
+        color: #fff;
+        border-radius: 5px;
+        background-color: #000;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+      dayjs.locale("ko");
+
+      function App() {
+        const [value, setValue] = React.useState(0);
+        const [debounce, setDebounce] = React.useState(0);
+        const [newTitle, setNewTitle] = React.useState("");
+        const [targetIdx, setTargetIdx] = React.useState(0);
+        const [modalFlag, setModalFlag] = React.useState(false);
+        const [date, setDate] = React.useState(
+          dayjs().format("YYYY년 MM월 DD일 dd A hh시 mm분 ss초")
+        );
+        const [post, setPost] = React.useState([
+          {
+            title: "서울 한강에서의 나만의 피크닉",
+            date: dayjs().format("YYYY-MM-DD dd A hh:mm:ss"),
+            like: 0,
+          },
+          {
+            title: "영종도에서 즐기는 힐링 바다뷰 카페",
+            date: dayjs().format("YYYY-MM-DD dd A hh:mm:ss"),
+            like: 0,
+          },
+          {
+            title: "맛있는 스타벅스 신메뉴 한잔",
+            date: dayjs().format("YYYY-MM-DD dd A hh:mm:ss"),
+            like: 0,
+          },
+          {
+            title: "강남에서 찾아낸 맛있는 타코 맛집",
+            date: dayjs().format("YYYY-MM-DD dd A hh:mm:ss"),
+            like: 0,
+          },
+          {
+            title: "부산 해안을 따라 즐기는 바다 산책",
+            date: dayjs().format("YYYY-MM-DD dd A hh:mm:ss"),
+            like: 0,
+          },
+          {
+            title: "영종도 바다뷰 카페 추천!",
+            date: dayjs().format("YYYY-MM-DD dd A hh:mm:ss"),
+            like: 0,
+          },
+          {
+            title: "영종도 바다뷰 카페 추천!",
+            date: dayjs().format("YYYY-MM-DD dd A hh:mm:ss"),
+            like: 0,
+          },
+          {
+            title: "자주 가는 카페에서 무슨 일이!?",
+            date: dayjs().format("YYYY-MM-DD dd A hh:mm:ss"),
+            like: 0,
+          },
+          {
+            title: "경남 아파트 값 폭락",
+            date: dayjs().format("YYYY-MM-DD dd A hh:mm:ss"),
+            like: 0,
+          },
+        ]);
+
+        const inputHandler = React.useCallback((e) => {
+          setNewTitle(e.target.value);
+        }, []);
+
+        return (
+          <div className="App">
+            <header>
+              <h1 className="logo">Sypear Blog</h1>
+            </header>
+            <main>
+              <div className="post-wrapper">
+                {post.map((item, idx) => (
+                  <article className="post" key={idx}>
+                    <h1
+                      className="post-title"
+                      onClick={() => {
+                        if (targetIdx !== idx) {
+                          setTargetIdx(idx);
+                          setModalFlag(true);
+                        } else {
+                          setModalFlag(!modalFlag);
+                        }
+                      }}
+                    >
+                      {item.title}
+                    </h1>
+                    <span className="post-date">{item.date}</span>
+                    <span
+                      className="post-like white-button"
+                      onClick={() => {
+                        const copyPost = [...post];
+                        copyPost[idx].like++;
+                        setPost(copyPost);
+                      }}
+                    >
+                      ❤️ LIKE <strong>{item.like}</strong>
+                    </span>
+                    <button
+                      type="button"
+                      className="post-delete-button black-button"
+                      onClick={() => {
+                        const copyPost = [...post];
+                        copyPost.splice(idx, 1);
+                        setPost(copyPost);
+                        setModalFlag(false);
+                      }}
+                    >
+                      삭제
+                    </button>
+                  </article>
+                ))}
+              </div>
+              <div className="post-manage-wrapper">
+                <div className="post-manage">
+                  <input
+                    className="input-title"
+                    type="text"
+                    placeholder="등록할 글 제목을 입력해주세요."
+                    onChange={inputHandler}
+                    value={newTitle}
+                  ></input>
+                  <button
+                    className="black-button"
+                    onClick={() => {
+                      const copyPost = [...post];
+                      copyPost.unshift({
+                        title: newTitle,
+                        date: dayjs().format("YYYY-MM-DD dd A hh:mm:ss"),
+                        like: 0,
+                      });
+                      setPost(copyPost);
+                      setNewTitle("");
+                    }}
+                  >
+                    등록
+                  </button>
+                </div>
+                <button
+                  className="white-button"
+                  onClick={() => {
+                    const copyPost = [...post];
+                    copyPost.sort((a, b) => (a.title > b.title ? 1 : -1));
+                    setPost(copyPost);
+                  }}
+                >
+                  가나다순 정렬
+                </button>
+              </div>
+              {modalFlag && (
+                <div className="content-wrapper">
+                  <article className="content">
+                    <h1 className="content-title">{post[targetIdx].title}</h1>
+                    <span className="content-date">{post[targetIdx].date}</span>
+                  </article>
+                </div>
+              )}
+            </main>
+            <footer>
+              <h1 className="project-name">Simple React Blog</h1>
+              <span className="project-desc">
+                React 기초 학습을 위한 간단한 블로그 만들기
+              </span>
+            </footer>
+          </div>
+        );
+      }
+
+      const container = document.getElementById("root");
+      const root = ReactDOM.createRoot(container);
+      root.render(<App />);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="./img/rabbit32px.png" />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        border: 0;
+      }
+
+      body {
+        background-color: black;
+      }
+
+      .saveOrload {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        align-items: center;
+        padding: 5px;
+      }
+
+      .saveOrload > button {
+        width: 100px;
+        height: 30px;
+        font-size: 1.25em;
+        font-weight: 800;
+        background-color: coral;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11),
+          0 1px 3px rgba(50, 50, 93, 0.11);
+      }
+
+      .saveOrload > button:hover {
+        font-size: 1.3em;
+        font-weight: 900;
+        cursor: pointer;
+      }
+
+      .app {
+        background-color: white;
+        width: 500px;
+        height: auto;
+        text-align: center;
+        margin: 0 auto;
+      }
+
+      .rabbit {
+        width: 400px;
+      }
+
+      .rabbit img {
+        width: 400px;
+      }
+
+      .title-score {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        padding: 0.2vh;
+        background-color: #d7e9c6;
+      }
+
+      .score {
+        width: 250px;
+        text-align: center;
+        font-size: 2em;
+        font-weight: 800;
+        background-color: #b3d493;
+        color: white;
+        border-top: 1px solid rgb(104, 104, 104);
+        border-bottom: 1px solid rgb(104, 104, 104);
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11),
+          0 1px 3px rgba(50, 50, 93, 0.11);
+      }
+
+      .store {
+        width: auto;
+        height: auto;
+      }
+
+      .store .title {
+        text-align: center;
+        font-size: 1.2em;
+        font-weight: 800;
+        width: auto;
+        background-color: #ecf3e5;
+      }
+
+      .title-font {
+        text-align: center;
+        font-size: 0.95em;
+        font-weight: 600;
+      }
+
+      .small-font {
+        text-align: center;
+        font-size: 0.75em;
+        font-weight: 800;
+      }
+
+      .carrotSell {
+        white-space: nowrap;
+        overflow-x: auto;
+        background-color: rgb(174, 173, 173);
+        display: flex;
+      }
+
+      .carrotSell > .store-block {
+        display: grid;
+        gap: 3.4px;
+        text-align: center;
+        justify-items: center;
+        padding: 1vh;
+        margin: 1.5vh;
+        align-items: center;
+        width: auto;
+        height: auto;
+        background-color: #ecf3e5;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11),
+          0 1px 3px rgba(50, 50, 93, 0.11);
+      }
+
+      .carrotSell > .store-block > button {
+        font-size: 1.2em;
+        background-color: #b3d493;
+        font-weight: 500;
+        width: 60px;
+        border-top: 1px dotted black;
+        border-bottom: 1px dotted black;
+        border-radius: 15px;
+      }
+
+      .carrotSell > .store-block > button:hover {
+        font-size: 1.2em;
+        background-color: #9dc07b;
+        font-weight: 600;
+        width: 60px;
+        border-top: 1px dotted black;
+        border-bottom: 1px dotted black;
+        border-radius: 15px;
+        cursor: pointer;
+      }
+    </style>
+    <title>Rabbit</title>
+  </head>
+  <body>
+    <div class="app">
+      <div class="saveOrload">
+        <button onclick="save()">저장</button>
+        <button onclick="load()">불러오기</button>
+      </div>
+      <p id="click" class="title-font">+1 당근/클릭</p>
+      <p id="clickSec" class="title-font">+0 당근/초</p>
+      <a href="javascript:void(0);" class="rabbit" onclick="add()"
+        ><img src="./img/rabbit1000.png" alt="rabbit"
+      /></a>
+      <div class="title-score">
+        <img src="./img/carrot.png" alt="당근" />
+        <input id="carrotCount" class="score" type="text" value="0" disabled />
+        <p style="font-size: 1.2em; font-weight: 800">당근</p>
+      </div>
+      <div class="store">
+        <p class="title">시장</p>
+        <div class="carrotSell">
+          <div class="store-block">
+            <p class="title-font">금</p>
+            <p id="needGold" class="title-font">시세 : 50 당근</p>
+            <p id="nowGold" class="small-font">보유 : 0 금</p>
+            <img src="./img/gold.png" alt="gold" />
+            <button onclick="buyGold()">구매</button>
+          </div>
+          <div class="store-block">
+            <p class="title-font">은</p>
+            <p id="needSilver" class="title-font">시세 : 25 당근</p>
+            <p id="nowSilver" class="small-font">보유 : 0 은</p>
+            <img src="./img/silver.png" alt="silver" />
+            <button onclick="buySilver()">구매</button>
+          </div>
+          <div class="store-block">
+            <p class="title-font">토끼(+1 당근/클릭)</p>
+            <p id="needRabbit" class="title-font">시세 : 5 은</p>
+            <p id="nowRabbit" class="small-font">보유 : 0 토끼</p>
+            <img src="./img/rabbit32px.png" alt="rabbit" />
+            <button onclick="buyRabbit()">구매</button>
+          </div>
+          <div class="store-block">
+            <p class="title-font">큰토끼(+3 당근/클릭)</p>
+            <p id="needBigRabbit" class="title-font">시세 : 25 은</p>
+            <p id="nowBigRabbit" class="small-font">보유 : 0 토끼</p>
+            <img src="./img/rabbitbig.png" alt="bigrabbit" />
+            <button onclick="buyBigRabbit()">구매</button>
+          </div>
+          <div class="store-block">
+            <p class="title-font">텃밭(+1 당근/초)</p>
+            <p id="needFarm" class="title-font">시세 : 5 금</p>
+            <p id="nowFarm" class="small-font">보유 : 0 텃밭</p>
+            <img src="./img/farm.png" alt="farm" />
+            <button onclick="buyFarm()">구매</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      let farm = 0;
+      let gold = 0;
+      let silver = 0;
+      let rabbit = 0;
+      let carrot = 0;
+      let bigRabbit = 0;
+
+      function update() {
+        document.querySelector("#click").innerHTML =
+          "+" + (1 + rabbit + 3 * bigRabbit) + " 당근/클릭";
+        document.querySelector("#clickSec").innerHTML =
+          "+" + 1 * farm + " 당근/초";
+        document.querySelector("#carrotCount").value = carrot.toLocaleString();
+        document.querySelector("#needGold").innerHTML = "시세 : 50 당근";
+        document.querySelector("#nowGold").innerHTML = "보유 : " + gold + " 금";
+        document.querySelector("#needSilver").innerHTML = "시세 : 25 당근";
+        document.querySelector("#nowSilver").innerHTML =
+          "보유 : " + silver + " 은";
+        document.querySelector("#needRabbit").innerHTML =
+          "시세 : " + 5 * (rabbit + 1) + " 은";
+        document.querySelector("#nowRabbit").innerHTML =
+          "보유 : " + rabbit + " 토끼";
+        document.querySelector("#needBigRabbit").innerHTML =
+          "시세 : " + 10 * (bigRabbit + 1) + " 은";
+        document.querySelector("#nowBigRabbit").innerHTML =
+          "보유 : " + bigRabbit + " 토끼";
+        document.querySelector("#needFarm").innerHTML =
+          "시세 : " + 5 * (farm + 1) + " 금";
+        document.querySelector("#nowFarm").innerHTML =
+          "보유 : " + farm + " 텃밭";
+      }
+      function add() {
+        carrot = carrot + 1 + rabbit + 3 * bigRabbit;
+        update();
+      }
+      function time() {
+        carrot += 1 * farm;
+        update();
+      }
+      function buyFarm() {
+        gold >= 5 * (farm + 1)
+          ? ((gold -= 5 * (farm + 1)), (farm += 1))
+          : alert("금이 부족해!");
+        update();
+      }
+      function buyGold() {
+        carrot >= 50 ? ((carrot -= 50), (gold += 1)) : alert("당근이 부족해!");
+        update();
+      }
+      function buySilver() {
+        carrot >= 25
+          ? ((carrot -= 25), (silver += 1))
+          : alert("당근이 부족해!");
+        update();
+      }
+      function buyRabbit() {
+        silver >= 5 * (rabbit + 1)
+          ? ((silver -= 5 * (rabbit + 1)), (rabbit += 1))
+          : alert("은이 부족해!");
+        update();
+      }
+      function buyBigRabbit() {
+        silver >= 10 * (bigRabbit + 1)
+          ? ((silver -= 10 * (bigRabbit + 1)), (bigRabbit += 1))
+          : alert("은이 부족해!");
+        update();
+      }
+
+      function save() {
+        localStorage.setItem("farm", farm);
+        localStorage.setItem("gold", gold);
+        localStorage.setItem("silver", silver);
+        localStorage.setItem("carrot", carrot);
+        localStorage.setItem("rabbit", rabbit);
+        localStorage.setItem("bigRabbit", bigRabbit);
+        alert("저장 성공!");
+      }
+      function load() {
+        if (
+          null == localStorage.getItem("farm") ||
+          null == localStorage.getItem("gold") ||
+          null == localStorage.getItem("silver") ||
+          null == localStorage.getItem("carrot") ||
+          null == localStorage.getItem("rabbit") ||
+          null == localStorage.getItem("bigRabbit")
+        ) {
+          alert("저장된 데이터가 없습니다.");
+        } else {
+          farm = parseInt(localStorage.getItem("farm"));
+          gold = parseInt(localStorage.getItem("gold"));
+          silver = parseInt(localStorage.getItem("silver"));
+          rabbit = parseInt(localStorage.getItem("rabbit"));
+          carrot = parseInt(localStorage.getItem("carrot"));
+          bigRabbit = parseInt(localStorage.getItem("bigRabbit"));
+
+          alert("불러오기 성공!");
+          update();
+        }
+      }
+      setInterval(time, 1e3);
+      update();
+    </script>
+  </body>
+</html>

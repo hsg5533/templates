@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TTS 웹 애플리케이션</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        margin: 20px;
+      }
+      select {
+        margin-bottom: 10px;
+      }
+      button {
+        padding: 10px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>TTS 웹 애플리케이션</h1>
+    <label for="voiceSelect">보이스 선택:</label>
+    <select id="voiceSelect"></select>
+    <br />
+    <label for="textToRead">텍스트 입력:</label>
+    <textarea id="textToRead" rows="4" cols="50"></textarea>
+    <br />
+    <button onclick="speakText()">텍스트 읽기</button>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // 보이스 목록 가져오기
+        var voicesSelect = document.getElementById("voiceSelect");
+        var voices = window.speechSynthesis.getVoices();
+
+        // 보이스 목록을 셀렉트 박스에 추가
+        voices.forEach(function (voice) {
+          var option = document.createElement("option");
+          option.value = voice.name;
+          option.textContent = voice.name + " (" + voice.lang + ")";
+          voicesSelect.appendChild(option);
+        });
+
+        // 텍스트 읽기 함수
+        window.speakText = function () {
+          var selectedVoice = voicesSelect.value;
+          var textToRead = document.getElementById("textToRead").value;
+
+          if (textToRead.trim() === "") {
+            alert("텍스트를 입력하세요.");
+            return;
+          }
+
+          var utterance = new SpeechSynthesisUtterance(textToRead);
+          utterance.voice = voices.find(function (voice) {
+            return voice.name === selectedVoice;
+          });
+
+          window.speechSynthesis.speak(utterance);
+        };
+      });
+    </script>
+  </body>
+</html>

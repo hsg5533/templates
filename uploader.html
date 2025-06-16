@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .filebox #upload-name {
+        display: inline-block;
+        height: 40px;
+        padding: 0 10px;
+        vertical-align: middle;
+        border: 1px solid #dddddd;
+        width: 78%;
+        color: #999999;
+      }
+
+      .filebox label {
+        display: inline-block;
+        padding: 10px 20px;
+        color: #fff;
+        vertical-align: middle;
+        background-color: #999999;
+        cursor: pointer;
+        height: auto;
+        margin-left: 10px;
+      }
+
+      .filebox input[type="file"] {
+        position: absolute;
+        width: 0;
+        height: 0;
+        padding: 0;
+        overflow: hidden;
+        border: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="filebox">
+      <input type="text" id="upload-name" placeholder="첨부파일" readonly />
+      <label for="file">파일찾기</label>
+      <input type="file" id="file" />
+    </div>
+    <div id="file-preview"></div>
+    <script>
+      document.querySelector("#file").addEventListener("change", function () {
+        var e = document.querySelector("#file"),
+          t = e.value;
+        document.querySelector("#upload-name").value = t;
+        var r = document.querySelector("#file-preview");
+        r.innerHTML = "";
+        var a = e.files[0];
+        if (a) {
+          var i = a.type;
+          if (
+            i.startsWith("image/") ||
+            i.startsWith("video/") ||
+            i.startsWith("audio/")
+          ) {
+            var l = URL.createObjectURL(a),
+              n = document.createElement("img");
+            i.startsWith("video/")
+              ? ((n = document.createElement("video")).controls = !0)
+              : i.startsWith("audio/") &&
+                ((n = document.createElement("audio")).controls = !0),
+              (n.src = l),
+              r.appendChild(n);
+          } else if (i.startsWith("text/")) {
+            var o = new FileReader();
+            (o.onload = function (e) {
+              var t = e.target.result,
+                a = document.createElement("pre");
+              (a.textContent = t), r.appendChild(a);
+            }),
+              o.readAsText(a);
+          }
+        }
+      });
+    </script>
+  </body>
+</html>

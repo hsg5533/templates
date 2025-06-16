@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=19eab3a30f796b6d20716c28e1b57222&libraries=services,clusterer,drawing"></script>
+    <style>
+      body {
+        margin: 0px;
+      }
+      #address_menu {
+        width: 90%;
+        display: flex;
+        position: absolute;
+        top: 0px;
+        padding: 5px;
+        z-index: 1;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.7);
+      }
+      #address {
+        width: 90%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        font-size: 16px;
+        font-family: Arial, sans-serif;
+        color: #333;
+      }
+      #search {
+        font-size: 20px;
+        margin: 5px;
+        color: #fff;
+      }
+      #btn {
+        width: 30%;
+        border: none;
+        margin-left: 10px;
+        border-radius: 10px;
+        background-color: #34beba;
+      }
+      .bg_white {
+        background: #fff;
+      }
+      #postcode {
+        display: none;
+        position: fixed;
+        margin: auto;
+        width: 80vw;
+        height: 80vh;
+        z-index: 2;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-radius: 10px;
+        padding: 10px 15px;
+        background-color: white;
+      }
+      #wrap {
+        top: 0;
+        z-index: 2;
+        width: 100%;
+        height: 100vh;
+        display: none;
+        position: fixed;
+        align-items: center;
+        flex-direction: column;
+        justify-content: flex-end;
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+      #close {
+        border: none;
+        display: none;
+        cursor: pointer;
+        position: absolute;
+        bottom: 2em;
+        z-index: 2;
+        padding: 5px;
+        width: 60vw;
+        border-radius: 10px;
+        justify-content: center;
+        background-color: #34beba;
+      }
+      #closebtn {
+        font-size: 14px;
+        margin: 0px 5px;
+        color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map" style="width: 100%; height: 100vh"></div>
+    <div id="wrap">
+      <div id="postcode"></div>
+      <button id="close" onclick="closePostcode()">
+        <p id="closebtn">닫기</p>
+      </button>
+    </div>
+    <div id="address_menu">
+      <input
+        type="text"
+        id="address"
+        placeholder="주소"
+        onclick="DaumPostcode()"
+        readonly
+      />
+      <button id="btn" onclick="DaumPostcode()">
+        <p id="search">검색</p>
+      </button>
+    </div>
+    <script>
+      const wrap = document.getElementById("wrap"),
+        closebtn = document.getElementById("close"),
+        postcode = document.getElementById("postcode"),
+        marker = new kakao.maps.Marker(),
+        geocoder = new kakao.maps.services.Geocoder(),
+        map = new kakao.maps.Map(document.getElementById("map"), {
+          center: new kakao.maps.LatLng(36.45563363795531, 127.98581607083194),
+          level: 5,
+        });
+      function getCurrentPosition() {
+        return new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(
+            (position) =>
+              resolve({
+                lat: position.coords.latitude,
+                lng: position.coords.longitude,
+              }),
+            (error) => reject(error),
+            { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+          );
+        });
+      }
+      function webViewToRN(data) {
+        try {
+          window.ReactNativeWebView.postMessage(JSON.stringify(data));
+        } catch (error) {
+          console.log(error);
+        }
+      }
+      function displayMarker(e, a) {
+        map.setCenter(e);
+        marker.setPosition(e);
+        marker.setMap(map);
+        webViewToRN({ address: a, lat: e.getLat(), lng: e.getLng() });
+      }
+      function searchDetailAddrFromCoords(e, a) {
+        geocoder.coord2Address(e.getLng(), e.getLat(), a);
+      }
+      function openPostcode() {
+        wrap.style.display = "flex";
+        postcode.style.display = "block";
+        closebtn.style.display = "flex";
+      }
+      function closePostcode() {
+        wrap.style.display = "none";
+        postcode.style.display = "none";
+        closebtn.style.display = "none";
+      }
+      function DaumPostcode() {
+        new daum.Postcode({
+          oncomplete(e) {
+            document.getElementById("address").value = e.address;
+            geocoder.addressSearch(e.address, (a, o) => {
+              o === kakao.maps.services.Status.OK && map.relayout();
+              closePostcode();
+              map.setLevel(1);
+              displayMarker(new kakao.maps.LatLng(a[0].y, a[0].x), e.address);
+            });
+          },
+          width: "100%",
+          height: "100%",
+          animation: true,
+        }).embed(postcode);
+        openPostcode();
+      }
+      function onSetMarker(data) {
+        const position = new kakao.maps.LatLng(data.lat, data.lng);
+        map.getCenter(position);
+        searchDetailAddrFromCoords(position, (a, o) => {
+          if (o === kakao.maps.services.Status.OK) {
+            displayMarker(
+              position,
+              a[0].road_address
+                ? a[0].road_address.address_name
+                : a[0].address.address_name
+            );
+          }
+        });
+      }
+      kakao.maps.event.addListener(map, "drag", () => {
+        marker.setPosition(map.getCenter());
+      });
+      kakao.maps.event.addListener(map, "dragend", () => {
+        searchDetailAddrFromCoords(map.getCenter(), (a, o) => {
+          if (o === kakao.maps.services.Status.OK) {
+            displayMarker(
+              map.getCenter(),
+              a[0].road_address
+                ? a[0].road_address.address_name
+                : a[0].address.address_name
+            );
+          }
+        });
+      });
+      // ios
+      window.addEventListener("message", (event) => {
+        onSetMarker(JSON.parse(event.data));
+      });
+      // android
+      document.addEventListener("message", (event) => {
+        onSetMarker(JSON.parse(event.data));
+      });
+      // web
+      getCurrentPosition().then((value) => {
+        onSetMarker(value);
+      });
+    </script>
+  </body>
+</html>

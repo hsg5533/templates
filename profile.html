@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>css practice3</title>
+    <style>
+      body {
+        background-color: beige;
+        padding-top: 10rem;
+        display: flex;
+        justify-content: center;
+      }
+
+      .card {
+        background-color: white;
+        max-width: 300px;
+        overflow: hidden;
+        border-radius: 2rem;
+        box-shadow: 0px 1rem 0.5rem rgba(0, 0, 0, 0.5);
+      }
+
+      .banner {
+        background-image: url("/css/myprofile/다운로드\ \(2\).jpeg");
+        display: flex;
+        justify-content: center;
+      }
+
+      .profile {
+        width: 8rem;
+        height: 8rem;
+        background-image: url("cvbox.org.notion-avatar-1708476211646.png");
+        background-size: 130px;
+        background-color: white;
+        border-radius: 50%;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.3);
+
+        transform: translateY(30%);
+        transition: transform 200ms cubic-bezier(0.18, 0.89, 0.32, 1.28);
+      }
+
+      .profile:hover {
+        transform: translateY(30%) scale(1.1);
+      }
+
+      .name {
+        text-align: center;
+        padding-top: 40px;
+      }
+
+      .follow-btn {
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .follow-btn button {
+        font-size: medium;
+        font-weight: bold;
+        background-color: rgb(255, 248, 156);
+        border: none;
+        padding: 0.6rem;
+        outline: none;
+        border-radius: 30px;
+      }
+
+      .follow-btn button:hover {
+        background-color: rgb(219, 193, 225);
+        transform: scale(1.05);
+      }
+
+      .desc {
+        padding: 4.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="banner">
+        <div class="profile"></div>
+      </div>
+      <h2 class="name">HSG5533</h2>
+      <div class="follow-btn">
+        <button>Follow</button>
+      </div>
+      <div class="desc">안 녕 하 세 요🙌</div>
+    </div>
+  </body>
+</html>

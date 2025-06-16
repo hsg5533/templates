@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewpoint" content="width=device-width, initial-scale=1.0" />
+    <title>Zodiac</title>
+    <!-- When you type link:css, it will automatically writes this code below -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
+    />
+    <style>
+      /*font*/
+      /* @import url('https://fonts.googleapis.com/css2?family=Mulish:wght@800&display=swap'); */
+      @font-face {
+        font-family: "GmarketSansBold";
+        src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff")
+          format("woff");
+        font-weight: normal;
+        font-style: normal;
+      }
+      /* font-family:'나눔고딕', 'NanumGothic', ng */
+
+      body {
+        background: #ffdc17;
+        text-align: center;
+        font-family: "GmarketSansBold", sans-serif;
+        /* text-shadow: -5px 0px #3a4ca8, 0px 5px #3a4ca8, 5px 0px #3a4ca8, 0px -5px #3a4ca8; */
+      }
+      h1 {
+        color: #3a4ca8;
+        text-align: center;
+        font-size: 900%;
+        margin-top: 100px;
+        -webkit-text-stroke: 6px #3a4ca8;
+      }
+      #question {
+        color: #3a4ca8;
+        font-size: 300%;
+      }
+
+      #explain {
+        color: #3a4ca8;
+        font-size: 100%;
+      }
+
+      img {
+        width: 50%;
+        height: 50%;
+        object-fit: fill;
+      }
+
+      #Enter {
+        background-color: #3a4ca8;
+        font-size: 100%;
+        padding: 10%, 10%, 10%, 10%;
+        border-radius: 50px;
+        margin-left: 30%;
+        margin-right: 30%;
+        margin-top: 5%;
+      }
+
+      .input_area {
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+        margin-left: 40%;
+        margin-right: 40%;
+      }
+
+      #input {
+        background: transparent;
+      }
+
+      footer {
+        height: 20%;
+        background-color: #3a4ca8;
+        opacity: 0.9;
+        -webkit-text-stroke: 0.03px #ffdc17;
+        color: #ffdc17;
+        /* border: solid ; */
+        position: relative;
+        margin-top: 50%;
+        padding: 0.5%;
+        text-align: center;
+        /* align-items : center; */
+      }
+    </style>
+  </head>
+  <body>
+    <h1><strong>What's my Zodiac </strong></h1>
+    <p id="question">
+      <br />
+      <strong>What Year Were You Born In?</strong><br />
+    </p>
+    <p id="explain">
+      The Korean zodiac is a classification scheme based on the lunar calendar
+      and itsorigin can be traced back to ancient China.
+      <br />
+      Check your personality by your zodiac and your best zodiac and worst!
+    </p>
+    <br />
+    <section class="input_area">
+      <input
+        id="input"
+        type="text"
+        oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');"
+        style="border: 10px solid #3a4ca8"
+        placeholder="ex 1998"
+      />
+      <button id="Enter" type="button" class="btn btn-primary">Enter</button>
+    </section>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      var input = document.getElementById("input"),
+        input_num = $("#input").val();
+      input.addEventListener("keypress", function (e) {
+        "Enter" == e.key &&
+          ("" == $("#input").val()
+            ? alert("Enter the input")
+            : document.getElementById("Enter").click());
+      });
+      var enter = document.getElementById("Enter");
+      function openCompiler() {
+        window.open("result.html", "_self");
+      }
+      function counter() {
+        var e = document.getElementById("input").value;
+        e.length > 4 && (e = e.substring(0, 3)),
+          (document.getElementById("input").value = e);
+        let t = [
+            "Sheep",
+            "Monkey",
+            "Rooster",
+            "Dog",
+            "Pig",
+            "Rat",
+            "Cow",
+            "Tiger",
+            "Rabbit",
+            "Dragon",
+            "Snake",
+            "Horse",
+          ],
+          o = [
+            "White",
+            "White",
+            "Black",
+            "Black",
+            "Blue",
+            "Blue",
+            "Red",
+            "Red",
+            "Yellow",
+            "Yellow",
+          ];
+        var n = parseInt($("#input").val());
+        let r = (n + 1) % 12,
+          a = n % 10;
+        var i = t[r],
+          s = o[a],
+          l = t[11 - r],
+          u = o[(a + 2) % 10],
+          b = t[(r + 6) % 12],
+          d = o[(a + 4) % 10],
+          h = [
+            "● Perfectionist inclination<br><br>● You tend to act ahead of words<br><br>● Strong tone, cold temperament can cause problems",
+            "● Perfectionist inclination<br><br>● You tend to act ahead of words<br><br>● Strong tone, cold temperament can cause problems",
+            "● Highly adaptable to situations and environments with flexibility<br><br>● You tend to adapt well to the organization, but you get a lot of invisible stress<br><br>● Take good care of your relationships so that you don't get overwhelmed by loneliness or depression",
+            "● Highly adaptable to situations and environments with flexibility<br><br>● You tend to adapt well to the organization, but you get a lot of invisible stress<br><br>● Take good care of your relationships so that you don't get overwhelmed by loneliness or depression",
+            "● You are kind and comfortable<br><br>● You start well, but you lack perseverance<br><br>● You are often frustrated because you have too much enthusiasm and have a lot of open work",
+            "● You are kind and comfortable<br><br>● You start well, but you lack perseverance<br><br>● You are often frustrated because you have too much enthusiasm and have a lot of open work",
+            "● Be popular for one's polite and cheerful personality<br><br>● You prefer the obvious and the definite and you dislike the vague<br><br>● You have to be careful because there are times when things go wrong due to your urgent personality and capriciousness",
+            "● Be popular for one's polite and cheerful personality<br><br>● You prefer the obvious and the definite and you dislike the vague<br><br>● You have to be careful because there are times when things go wrong due to your urgent personality and capriciousness",
+            "● Full of creativity<br><br>● Reliable, responsible, and honest<br><br>● You should go outside and meet people, not just stay at home",
+            "● Full of creativity<br><br>● Reliable, responsible, and honest<br><br>● You should go outside and meet people, not just stay at home",
+          ][a],
+          c = [
+            "● You never give up what you're determined to do, you're stubborn and you have a lot of pride<br><br>● Pacifist, Hate fighting, Polite<br><br>● Thoughtful and compassionate",
+            "● You are independent and can't refuse others'requests, so you step up to the work of others<br><br>● A tendency to be creative and quick-witted but not to finish things well<br><br>● You can do something wrong if you only believe in your skills",
+            "● A tendency to give up difficult tasks easily even though they are understanding and judgmental<br><br>● An upright character with accuracy, systematic, and determination<br><br>● Hard to show one's true colors",
+            "● The tendency of a once-established relationship to go to the end because of its tenacity and loyalty<br><br>● Passive and indecisive<br><br>● Intelligent and frank",
+            "● It symbolizes wealth and good fortune, but beware of laziness<br><br>● Active, loyal, honest and sociable in everything<br><br>● A tendency to be honest and calm but simple",
+            "● Goes well with everything with sociality, honesty and sincerity<br><br>● Highly adaptable and witty<br><br>● Having strong patient",
+            "● You are usually gentle, but once you get angry, you are scared<br><br>● Good discipline, good personality, good listener<br><br>● A man of few words and great patience",
+            "● Full of challenging spirit (active tendencies)<br><br>● Aversion to restraint and control<br><br>● A romanticist",
+            "● A tendency to be unable to do other things when one thing is lost<br><br>● The condition of having many excellent people in everything<br><br>● Gentle and good-natured",
+            "● The state of being hard-nosed and determined but not tactful or manipulative<br><br>● Self-respecting and loathing to lose<br><br>● A sensitive personality",
+            "● Quick to judge situations and logical<br><br>● Thoughtful and humorous towards others<br><br>● A strong sense of responsibility",
+            "● Tendency to lose by being strong-willed and effective, but taking the initiative first<br><br>● Lively and popular<br><br>● Quick-witted",
+          ][r];
+        let g = [i, s, l, u, b, d, h, c];
+        console.log(g),
+          sessionStorage.setItem("resultArray", JSON.stringify(g));
+      }
+      enter.addEventListener("click", function () {
+        "" == $("#input").val()
+          ? alert("Enter the input")
+          : (counter(), openCompiler());
+      });
+    </script>
+  </body>
+</html>

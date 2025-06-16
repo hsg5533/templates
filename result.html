@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Your Result</title>
+    <meta charset="UTF-8" />
+    <meta name="viewpoint" content="width=device-width, initial-scale=1.0" />
+    <style>
+      /*font*/
+      @font-face {
+        font-family: "GmarketSansBold";
+        src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff")
+          format("woff");
+        font-weight: normal;
+        font-style: normal;
+      }
+
+      body {
+        background: #ffdc17;
+        /* text-align: center; */
+        font-family: "GmarketSansBold", sans-serif;
+        text-align: center;
+        margin: 0;
+        /* padding: %; */
+      }
+      h1 {
+        color: #3a4ca8;
+        text-align: left;
+        font-size: 200%;
+        margin-top: 1%;
+        margin-left: 1%;
+        /* -webkit-text-stroke: 1px #3a4ca8; */
+      }
+
+      h2 {
+        color: #3a4ca8;
+        text-align: left;
+        font-size: 400%;
+        margin-top: -1%;
+        margin-left: 1%;
+        -webkit-text-stroke: 3px #3a4ca8;
+      }
+
+      h3 {
+        font-size: 200%;
+        margin-bottom: -2%;
+      }
+
+      .main_pic_circle {
+        position: absolute;
+        margin: auto;
+        width: 100%;
+        height: 100%;
+      }
+
+      .main_pic_aniaml {
+        object-fit: scale-down;
+        /* overflow: hidden; */
+        width: 100%;
+        height: 100%;
+        /* border: solid black;  */
+        /* margin-top: -5%; */
+        /* margin: auto; */
+        /* margin-left: auto; */
+        /* margin-right: auto; */
+        /* text-align: center; */
+        /* float: left; */
+
+        /*-------change color--------*/
+
+        /*default : black*/
+        filter: invert(0%) sepia(95%) saturate(20%) hue-rotate(223deg)
+          brightness(86%) contrast(101%);
+        /*change to red*/
+        /* filter: invert(39%) sepia(89%) saturate(1165%) hue-rotate(340deg) brightness(84%) contrast(105%); */
+
+        /*change to blue*/
+        /* filter: invert(21%) sepia(84%) saturate(1462%) hue-rotate(215deg) brightness(101%) contrast(86%); */
+
+        /*change to silver*/
+        /* filter: invert(81%) sepia(0%) saturate(35%) hue-rotate(231deg) brightness(98%) contrast(90%); */
+
+        /*change to yellow*/
+        /* filter: invert(87%) sepia(21%) saturate(6975%) hue-rotate(7deg) brightness(98%) contrast(105%); */
+      }
+
+      .parents {
+        margin-top: -5%;
+        color: #3a4ca8;
+        -webkit-text-stroke: 0.7px #3a4ca8;
+        position: relative;
+        overflow: hidden;
+        /* border: dotted */
+        object-fit: scale-down;
+        /* text-align: center; */
+        /* position: relative; */
+      }
+
+      .color_explain {
+        width: 50%;
+        /* border: solid #3a4ca8; */
+        /* float: left; */
+        /* position: absolute; */
+        background-color: #ffdc17;
+        text-align: center;
+        margin: auto;
+      }
+
+      .zodiac_explain {
+        width: 50%;
+        /* border: solid; */
+        /* float: right; */
+        background-color: #ffdc17;
+        text-align: center;
+        margin: auto;
+      }
+
+      .bestie {
+        width: 50%;
+        /* border: solid; */
+        /* margin: auto; */
+        float: left;
+        position: relative;
+      }
+
+      .worst {
+        width: 50%;
+        /* border: solid; */
+        float: right;
+        /* clear:both; */
+        /* object-fit: fill; */
+        /* background-color: rgb(233, 76, 199); */
+
+        /* width: 20%; */
+        /* height: 20%; */
+        /* object-fit: scale-down; */
+        /* text-align: center; */
+        /* margin: auto; */
+        position: relative;
+      }
+
+      .sub_img_circle_1 {
+        position: absolute;
+        /* position:relative; */
+
+        /* text-align: center; */
+        /* margin: auto; */
+        /* top: 90%;*/
+        left: 50%;
+        transform: translate(-50%, -2%);
+        /* right: 50%; */
+      }
+
+      .sub_img_circle_2 {
+        position: absolute;
+        /* position:relative; */
+
+        /* text-align: center; */
+        /* margin: auto; */
+        /* top: 90%;*/
+        right: 50%;
+        transform: translate(50%, -2%);
+      }
+
+      .sub_img_aniaml_best {
+        /*-------change color--------*/
+
+        /*default : black*/
+        filter: invert(0%) sepia(95%) saturate(20%) hue-rotate(223deg)
+          brightness(86%) contrast(101%);
+
+        /*change to red*/
+        /* filter: invert(39%) sepia(89%) saturate(1165%) hue-rotate(340deg) brightness(84%) contrast(105%); */
+
+        /*change to blue*/
+        /* filter: invert(21%) sepia(84%) saturate(1462%) hue-rotate(215deg) brightness(101%) contrast(86%); */
+
+        /*change to silver*/
+        /* filter: invert(81%) sepia(0%) saturate(35%) hue-rotate(231deg) brightness(98%) contrast(90%); */
+
+        /*change to yellow*/
+        /* filter: invert(87%) sepia(21%) saturate(6975%) hue-rotate(7deg) brightness(98%) contrast(105%); */
+      }
+
+      .sub_img_aniaml_worst {
+        /*-------change color--------*/
+
+        /*default : black*/
+        /* filter: invert(0%) sepia(95%) saturate(20%) hue-rotate(223deg) brightness(86%) contrast(101%); */
+
+        /*change to red*/
+        /* filter: invert(39%) sepia(89%) saturate(1165%) hue-rotate(340deg) brightness(84%) contrast(105%); */
+
+        /*change to blue*/
+        filter: invert(21%) sepia(84%) saturate(1462%) hue-rotate(215deg)
+          brightness(101%) contrast(86%);
+
+        /*change to silver*/
+        /* filter: invert(81%) sepia(0%) saturate(35%) hue-rotate(231deg) brightness(98%) contrast(90%); */
+
+        /*change to yellow*/
+        /* filter: invert(87%) sepia(21%) saturate(6975%) hue-rotate(7deg) brightness(98%) contrast(105%); */
+      }
+
+      footer {
+        height: 20%;
+        background-color: #3a4ca8;
+        opacity: 0.9;
+        -webkit-text-stroke: 0.03px #ffdc17;
+        color: #ffdc17;
+        /* border: solid ; */
+        position: relative;
+        margin-top: 50%;
+        padding: 0.5%;
+        text-align: center;
+        /* align-items : center; */
+      }
+
+      .snapchat-creative-kit-share {
+        /* position: absolute; */
+        /* position: fixed; */
+        right: 50%;
+        margin-right: 1%;
+        /* transform: translate(50%, -50%); */
+        /* padding-top: 90%; */
+        /* text-align: center; */
+        /* margin: auto; */
+        /* align-items: center; */
+        /* display: flex; */
+        float: right;
+        /* border : solid; */
+        /* width : 50%; */
+        height: 40%;
+        /* object-fit: fill; */
+        /* overflow: hidden; */
+
+        /* text-align: center; */
+      }
+
+      .fb-share-button {
+        position: relative;
+        border: solid;
+        float: right;
+        width: 5%;
+        height: 5%;
+        object-fit: fill;
+        overflow: hidden;
+
+        text-align: center;
+        display: none;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>My ZODIAC is . . .</h1>
+    <h2 id="main_name">YELLOW COW</h2>
+
+    <div class="parents">
+      <div class="main_pic_circle">
+        <img src="./img/backcircle.png" width="800" />
+      </div>
+      <div class="main_pic_aniaml">
+        <img id="main_pic_aniaml" src="./img/cow.png" width="800" />
+      </div>
+      <div class="color_explain">
+        <h3>
+          <div id="trait_color">Traits of Yellow</div>
+        </h3>
+        <br />
+        <br />
+        <div id="trait_expalin_of_color">trait_expalin_of_color</div>
+      </div>
+      <br />
+      <div class="zodiac_explain">
+        <h3>
+          <div id="trait_animal">Traits of Cow</div>
+        </h3>
+        <br />
+        <br />
+        <div id="trait_expalin_of_animal">trait_expalin_of_animal</div>
+      </div>
+      <div class="bestie">
+        <h3>
+          <strong> Your Bestie </strong>
+        </h3>
+        <br />
+        <div id="bestie_name">Yellow Cow</div>
+        <br />
+        <div class="sub_img_circle_1">
+          <img src="./img/backcircle.png" width="300" />
+        </div>
+        <div class="sub_img_aniaml_best">
+          <img
+            onclick="moveToBestie();"
+            id="sub_pic_aniaml_best"
+            src="./img/horse.png"
+            width="300"
+          />
+        </div>
+      </div>
+      <div class="worst">
+        <h3>
+          <strong> Be Careful...! </strong>
+        </h3>
+        <br />
+        <div id="worst_name">Yellow Cow</div>
+        <br />
+        <div class="sub_img_circle_2">
+          <img src="./img/backcircle.png" width="300" />
+        </div>
+        <div class="sub_img_aniaml_worst">
+          <img
+            onclick="moveToWorst();"
+            id="sub_pic_aniaml_worst"
+            src="./img/snake.png"
+            width="300"
+          />
+        </div>
+      </div>
+      <script src="./js/jquery.js"></script>
+      <script>
+        const resultArray = JSON.parse(sessionStorage.getItem("resultArray"));
+        function AnimalPic(e, t) {
+          "Cow" == t
+            ? (document.getElementById(e).src = "./img/cow.png")
+            : "Tiger" == t
+            ? (document.getElementById(e).src = "./img/tiger.png")
+            : "Rabbit" == t
+            ? (document.getElementById(e).src = "./img/rabbit.png")
+            : "Dragon" == t
+            ? (document.getElementById(e).src = "./img/dragon.png")
+            : "Snake" == t
+            ? (document.getElementById(e).src = "./img/snake.png")
+            : "Horse" == t
+            ? (document.getElementById(e).src = "./img/horse.png")
+            : "Sheep" == t
+            ? (document.getElementById(e).src = "./img/sheep.png")
+            : "Monkey" == t
+            ? (document.getElementById(e).src = "./img/monkey.png")
+            : "Rooster" == t
+            ? (document.getElementById(e).src = "./img/rooster.png")
+            : "Dog" == t
+            ? (document.getElementById(e).src = "./img/dog.png")
+            : "Pig" == t
+            ? (document.getElementById(e).src = "./img/pig.png")
+            : "Rat" == t && (document.getElementById(e).src = "./img/rat.png");
+        }
+        function ColorFliter(e, t) {
+          "White" == t &&
+            $(e).css(
+              "filter",
+              "invert(81%) sepia(0%) saturate(35%) hue-rotate(231deg) brightness(98%) contrast(90%)"
+            ),
+            "Black" == t &&
+              $(e).css(
+                "filter",
+                "invert(0%) sepia(95%) saturate(20%) hue-rotate(223deg) brightness(86%) contrast(101%)"
+              ),
+            "Blue" == t &&
+              $(e).css(
+                "filter",
+                "invert(21%) sepia(84%) saturate(1462%) hue-rotate(215deg) brightness(101%) contrast(86%)"
+              ),
+            "Red" == t &&
+              $(e).css(
+                "filter",
+                "invert(39%) sepia(89%) saturate(1165%) hue-rotate(340deg) brightness(84%) contrast(105%)"
+              ),
+            "Yellow" == t &&
+              $(e).css(
+                "filter",
+                "invert(87%) sepia(21%) saturate(6975%) hue-rotate(7deg) brightness(98%) contrast(105%)"
+              );
+        }
+        AnimalPic("main_pic_aniaml", resultArray[0]),
+          AnimalPic("sub_pic_aniaml_best", resultArray[2]),
+          AnimalPic("sub_pic_aniaml_worst", resultArray[4]),
+          (document.getElementById("main_name").innerHTML =
+            resultArray[1] + " " + resultArray[0]),
+          (document.getElementById("bestie_name").innerHTML =
+            resultArray[3] + " " + resultArray[2]),
+          (document.getElementById("worst_name").innerHTML =
+            resultArray[5] + " " + resultArray[4]),
+          (document.getElementById("trait_animal").innerHTML =
+            "Traits of " + resultArray[0]),
+          (document.getElementById("trait_color").innerHTML =
+            "Traits of " + resultArray[1]),
+          (document.getElementById("trait_expalin_of_color").innerHTML =
+            resultArray[6]),
+          (document.getElementById("trait_expalin_of_animal").innerHTML =
+            resultArray[7]),
+          ColorFliter(".main_pic_aniaml", resultArray[1]),
+          ColorFliter(".sub_img_aniaml_best", resultArray[3]),
+          ColorFliter(".sub_img_aniaml_worst", resultArray[5]);
+        const animalList = [
+            "Sheep",
+            "Monkey",
+            "Rooster",
+            "Dog",
+            "Pig",
+            "Rat",
+            "Cow",
+            "Tiger",
+            "Rabbit",
+            "Dragon",
+            "Snake",
+            "Horse",
+          ],
+          colorList = [
+            "White",
+            "White",
+            "Black",
+            "Black",
+            "Blue",
+            "Blue",
+            "Red",
+            "Red",
+            "Yellow",
+            "Yellow",
+          ],
+          color_TraitsList = [
+            "● Perfectionist inclination<br><br>● You tend to act ahead of words<br><br>● Strong tone, cold, cold temperament can cause problems",
+            "● Perfectionist inclination<br><br>● You tend to act ahead of words<br><br>● Strong tone, cold, cold temperament can cause problems",
+            "● Highly adaptable to situations and environments with flexibility and flexibility<br><br>● You tend to adapt well to the organization, but you get a lot of invisible stress<br><br>● Take good care of your relationships so that you don't get overwhelmed by loneliness or depression",
+            "● Highly adaptable to situations and environments with flexibility and flexibility<br><br>● You tend to adapt well to the organization, but you get a lot of invisible stress<br><br>● Take good care of your relationships so that you don't get overwhelmed by loneliness or depression",
+            "● You are kind and comfortable<br><br>● You start well, but you lack perseverance<br><br>● You are often frustrated because you have too much enthusiasm or enthusiasm and have a lot of open work",
+            "● You are kind and comfortable<br><br>● You start well, but you lack perseverance<br><br>● You are often frustrated because you have too much enthusiasm or enthusiasm and have a lot of open work",
+            "● Be popular for one's polite and cheerful personality<br><br>● You prefer the obvious and the definite and you dislike the vague<br><br>● You have to be careful because there are times when things go wrong due to your urgent personality and capriciousness",
+            "● Be popular for one's polite and cheerful personality<br><br>● You prefer the obvious and the definite and you dislike the vague<br><br>● You have to be careful because there are times when things go wrong due to your urgent personality and capriciousness",
+            "● Full of creativity<br><br>● Reliable, responsible, and honest<br><br>● You should go outside and meet people, not just stay at home",
+            "● Full of creativity<br><br>● Reliable, responsible, and honest<br><br>● You should go outside and meet people, not just stay at home",
+          ],
+          animal_TraitsList = [
+            "● You never give up what you're determined to do, you're stubborn and you have a lot of pride<br><br>● Pacifist, Hate fighting, Polite<br><br>● Thoughtful and compassionate",
+            "● You are independent and can't refuse others'requests, so you step up to the work of others<br><br>● A tendency to be creative and quick-witted but not to finish things well<br><br>● You can do something wrong if you only believe in your skills",
+            "● A tendency to give up difficult tasks easily even though they are understanding and judgmental<br><br>● An upright character with accuracy, systematic, and determination<br><br>● Hard to show one's true colors",
+            "● The tendency of a once-established relationship to go to the end because of its tenacity and loyalty<br><br>● Passive and indecisive<br><br>● Intelligent and frank",
+            "● It symbolizes wealth and good fortune, but beware of laziness<br><br>● Active, loyal, honest and sociable in everything<br><br>● A tendency to be honest and calm but simple",
+            "● Goes well with everything with sociality, honesty and sincerity<br><br>● Highly adaptable and witty<br><br>● Having strong patient",
+            "● You are usually gentle and gentle, but once you get angry, you are scared<br><br>● Good discipline, good personality, good listener<br><br>● A man of few words and great patience",
+            "● Full of challenging spirit (active tendencies)<br><br>● Aversion to restraint and control<br><br>● A romanticist",
+            "● A tendency to be unable to do other things when one thing is lost<br><br>● The condition of having many excellent people in everything<br><br>● Gentle and good-natured",
+            "● The state of being hard-nosed and determined but not tactful or manipulative<br><br>● Self-respecting and loathing to lose<br><br>● A sensitive personality",
+            "● Quick to judge situations and logical<br><br>● Thoughtful and humorous towards others<br><br>● A strong sense of responsibility",
+            "● Tendency to lose by being strong-willed and effective, but taking the initiative first<br><br>● Lively and popular<br><br>● Quick-witted",
+          ];
+        var animal_ = resultArray[0],
+          color_ = resultArray[1],
+          bestAnimal_ = resultArray[2],
+          bestColor_ = resultArray[3],
+          worstAnimal_ = resultArray[4],
+          worstColor_ = resultArray[5];
+        function moveToBestie() {
+          var e = animalList.indexOf(bestAnimal_),
+            t = colorList.indexOf(bestColor_),
+            r = animalList[e],
+            o = colorList[t],
+            n = animalList[11 - e],
+            a = colorList[(t + 2) % 10],
+            i = animalList[(e + 6) % 12],
+            s = colorList[(t + 4) % 10],
+            l = color_TraitsList[t],
+            u = animal_TraitsList[e];
+          let b = [r, o, n, a, i, s, l, u];
+          console.log(b),
+            sessionStorage.setItem("resultArray", JSON.stringify(b)),
+            window.open("result.html", "_self");
+        }
+        function moveToWorst() {
+          let e = animalList.indexOf(worstAnimal_),
+            t = colorList.indexOf(worstColor_);
+          var r = animalList[e],
+            o = colorList[t],
+            n = animalList[11 - e],
+            a = colorList[(t + 2) % 10],
+            i = animalList[(e + 6) % 12],
+            s = colorList[(t + 4) % 10],
+            l = color_TraitsList[t],
+            u = animal_TraitsList[e];
+          let b = [r, o, n, a, i, s, l, u];
+          console.log(b),
+            sessionStorage.setItem("resultArray", JSON.stringify(b)),
+            window.open("result.html", "_self");
+        }
+      </script>
+    </div>
+  </body>
+</html>

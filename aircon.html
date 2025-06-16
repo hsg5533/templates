@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Aircon</title>
+    <style>
+      button {
+        padding: 5px;
+        background: #272727;
+        color: white;
+        border-radius: 5px;
+      }
+
+      button:active {
+        background: #6b6b6b;
+      }
+
+      .aircon-box {
+        position: relative;
+        display: flex;
+        justify-content: center;
+      }
+
+      .aircon {
+        width: 350px;
+      }
+
+      .air {
+        position: absolute;
+      }
+
+      .aircon-fan {
+        position: absolute;
+        transform: translateY(102px) scaleY(1);
+      }
+
+      .air {
+        visibility: hidden;
+      }
+
+      .air-animate {
+        visibility: visible;
+        clip-path: inset(0 0 0 0);
+        animation: reveal 2s forwards;
+        animation-iteration-count: infinite;
+      }
+
+      @keyframes reveal {
+        0% {
+          clip-path: inset(0 0 100% 0);
+          opacity: 0.9;
+        }
+
+        50% {
+          opacity: 0.7;
+        }
+
+        100% {
+          clip-path: inset(0 0 0 0);
+          opacity: 0;
+        }
+      }
+
+      .flip {
+        transition: transform 1s;
+        transform: translateY(114px) scaleY(-1);
+      }
+
+      .temp-box {
+        position: absolute;
+        top: 50px;
+        opacity: 1;
+        transition: all 1s;
+      }
+    </style>
+  </head>
+
+  <body style="margin: 0">
+    <div class="aircon-box">
+      <div class="temp-box">
+        <h4 class="temp"></h4>
+      </div>
+      <img src="./img/aircon0.png" class="aircon" />
+      <img src="./img/aircon-fan2.png" class="aircon aircon-fan" />
+      <img src="./img/air2.png" class="aircon air" />
+    </div>
+
+    <div class="aircon-box">
+      <button class="plus">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          fill="currentColor"
+          class="bi bi-plus"
+          viewBox="0 0 16 16"
+        >
+          <path
+            d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"
+          />
+        </svg>
+      </button>
+      <button class="minus">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          fill="currentColor"
+          class="bi bi-dash"
+          viewBox="0 0 16 16"
+        >
+          <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8" />
+        </svg>
+      </button>
+      <button class="brown-noise2"></button>
+    </div>
+    <script>
+      const toggleButton = document.querySelector(".brown-noise2");
+      let brownNoiseNode = null;
+      let audioContext = null;
+      let gainNode = null;
+      let filterNode = null;
+      let isPlaying = false;
+
+      const unmuteIcon = `
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="14" fill="currentColor" class="bi bi-volume-up-fill" viewBox="0 0 16 16">
+  <path d="M11.536 14.01A8.47 8.47 0 0 0 14.026 8a8.47 8.47 0 0 0-2.49-6.01l-.708.707A7.48 7.48 0 0 1 13.025 8c0 2.071-.84 3.946-2.197 5.303z"/>
+  <path d="M10.121 12.596A6.48 6.48 0 0 0 12.025 8a6.48 6.48 0 0 0-1.904-4.596l-.707.707A5.48 5.48 0 0 1 11.025 8a5.48 5.48 0 0 1-1.61 3.89z"/>
+  <path d="M8.707 11.182A4.5 4.5 0 0 0 10.025 8a4.5 4.5 0 0 0-1.318-3.182L8 5.525A3.5 3.5 0 0 1 9.025 8 3.5 3.5 0 0 1 8 10.475zM6.717 3.55A.5.5 0 0 1 7 4v8a.5.5 0 0 1-.812.39L3.825 10.5H1.5A.5.5 0 0 1 1 10V6a.5.5 0 0 1 .5-.5h2.325l2.363-1.89a.5.5 0 0 1 .529-.06"/>
+</svg>`;
+
+      const muteIcon = `
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="14" fill="currentColor" class="bi bi-volume-mute-fill" viewBox="0 0 16 16">
+  <path d="M6.717 3.55A.5.5 0 0 1 7 4v8a.5.5 0 0 1-.812.39L3.825 10.5H1.5A.5.5 0 0 1 1 10V6a.5.5 0 0 1 .5-.5h2.325l2.363-1.89a.5.5 0 0 1 .529-.06m7.137 2.096a.5.5 0 0 1 0 .708L12.207 8l1.647 1.646a.5.5 0 0 1-.708.708L11.5 8.707l-1.646 1.647a.5.5 0 0 1-.708-.708L10.793 8 9.146 6.354a.5.5 0 1 1 .708-.708L11.5 7.293l1.646-1.647a.5.5 0 0 1 .708 0"/>
+</svg>`;
+
+      async function toggleSound() {
+        if (!audioContext) {
+          audioContext = new (window.AudioContext || window.AudioContext)();
+          await audioContext.audioWorklet.addModule("./js/brown.js");
+        }
+        if (audioContext.state === "suspended") {
+          await audioContext.resume();
+        }
+        if (isPlaying) {
+          // Stop sound
+          brownNoiseNode?.disconnect();
+          gainNode?.disconnect();
+          brownNoiseNode = null;
+          gainNode = null;
+          toggleButton.innerHTML = unmuteIcon;
+        } else {
+          // Start sound
+          brownNoiseNode = new AudioWorkletNode(
+            audioContext,
+            "brown-noise-processor"
+          );
+          gainNode = audioContext.createGain();
+          filterNode = audioContext.createBiquadFilter();
+          filterNode.type = "lowpass";
+          filterNode.frequency.value = 4000;
+          brownNoiseNode
+            .connect(filterNode)
+            .connect(gainNode)
+            .connect(audioContext.destination);
+          toggleButton.innerHTML = muteIcon;
+        }
+        isPlaying = !isPlaying;
+      }
+      toggleButton.addEventListener("click", toggleSound);
+      toggleButton.innerHTML = unmuteIcon;
+
+      const tempElement = document.querySelector(".temp");
+
+      let currentTemp = 30;
+
+      let isSoundOn = false;
+
+      //brown noise ON
+      document.querySelector(".brown-noise2").click();
+      isSoundOn = true;
+
+      //animation
+      document.querySelector(".aircon-fan").classList.add("flip");
+      document.querySelector(".air").classList.add("air-animate");
+
+      //+- buttons
+      document.querySelector(".plus").addEventListener("click", () => {
+        localStorage.setItem("+", (Number(localStorage.getItem("+")) || 0) + 1);
+
+        if (currentTemp < 30) {
+          currentTemp++;
+          tempElement.innerHTML = currentTemp + "℃";
+        }
+      });
+      document.querySelector(".minus").addEventListener("click", () => {
+        localStorage.setItem("-", (Number(localStorage.getItem("-")) || 0) + 1);
+
+        if (currentTemp > 18) {
+          currentTemp--;
+          tempElement.innerHTML = currentTemp + "℃";
+        }
+      });
+    </script>
+  </body>
+</html>

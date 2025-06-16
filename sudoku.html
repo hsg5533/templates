@@ -1,0 +1,1498 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HTML5 Sudoku</title>
+    <style>
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        border: 0px;
+        overflow: auto;
+      }
+
+      body {
+        margin: 0px;
+        padding: 0px;
+        background: #e10a04 url("img/backgroundx.png") repeat-x;
+        font-family: Arial;
+        color: #ffaeae;
+        font-size: 12px;
+      }
+
+      body,
+      table,
+      tr,
+      td,
+      div {
+        margin: 0px;
+        padding: 0px;
+        border: 0px;
+      }
+
+      b {
+        color: #ffffff;
+        font-weight: bold;
+      }
+
+      #Wrapper {
+        background: url("img/sudoku.png") no-repeat top center;
+        width: 100%;
+        height: 100%;
+      }
+
+      #Main,
+      #Content,
+      #Footer {
+        width: 980px;
+        margin: 0 auto;
+      }
+
+      #PageTitle {
+        font-family: Segoe UI, Arial;
+        font-weight: normal;
+        color: #ffffff;
+        font-size: 33px;
+      }
+
+      a {
+        color: #ffaeae;
+        text-decoration: none;
+      }
+
+      a:hover {
+        color: #ffffff;
+        text-decoration: none;
+      }
+
+      #Content {
+        float: left;
+      }
+
+      #Column1 {
+        width: 300px;
+        float: left;
+      }
+
+      #sudokuBoard {
+        width: 426px;
+        margin-left: 40px;
+        float: left;
+        box-shadow: 0px 0px 30px #680301;
+        -moz-box-shadow: 0px 0px 30px #680301;
+        -webkit-box-shadow: 0 0 30px #680301;
+      }
+
+      #Column2 {
+        width: 174px;
+        margin-left: 40px;
+        float: left;
+      }
+
+      #Footer {
+        margin-top: 600px;
+        color: #910502;
+      }
+
+      #FooterDetails {
+        float: left;
+        font-size: 11px;
+      }
+
+      #Copyright {
+        float: right;
+        font-size: 10px;
+      }
+
+      td.boardCellGroupA,
+      td.boardCellGroupB {
+        background-color: #940302;
+      }
+
+      td.boardCellGroupA td.boardCell {
+        width: 44px;
+        height: 44px;
+        border: 1px solid #ec0904;
+        background-color: #da0603;
+      }
+
+      td.boardCellGroupB td.boardCell {
+        width: 44px;
+        height: 44px;
+        border: 1px solid #d40703;
+        background-color: #c40502;
+      }
+
+      .staticValue {
+        font-family: Segoe UI, Arial;
+        text-align: center;
+        vertical-align: middle;
+        font-size: 30px;
+        color: #6c0000;
+      }
+
+      .staticValue,
+      .editValue {
+        width: 42px;
+        height: 42px;
+        padding: 0px;
+        margin: 0px;
+        border: 1px solid #da0603;
+      }
+
+      .editValue:hover {
+        background: #940302;
+      }
+
+      label {
+        position: relative;
+        top: 3px;
+        line-height: 24px;
+        font-size: 15px;
+        color: #ffffff;
+      }
+
+      select {
+        font-family: Arial;
+        color: #999999;
+        font-weight: normal;
+        font-size: 12px;
+        border-top: solid 1px #cccccc;
+        border-left: solid 1px #e2e3ea;
+        border-bottom: solid 1px #ffffff;
+        border-right: solid 1px #e2e3ea;
+        margin: 3px 0px;
+        min-width: 100px;
+        background: #fdfdfd;
+      }
+
+      #timeFinished {
+        font-family: Segoe UI, Arial;
+        font-size: 46px;
+        font-weight: bold;
+        line-height: 40px;
+      }
+
+      .finishedLabel,
+      #timeFinished {
+        color: #fbf2a8;
+      }
+
+      .editValue input {
+        font-family: Segoe UI, Arial;
+        font-size: 30px;
+        color: #ffffff;
+        width: 44px;
+        /*height: 44px;*/
+        padding: 0px;
+        border: 0px;
+        background: none !important;
+        text-align: center;
+        vertical-align: middle;
+        position: relative;
+        left: -1px;
+      }
+
+      input[type="submit"] {
+        font-family: Arial;
+        font-size: 18px;
+        color: #ffffff;
+        text-transform: uppercase;
+        border: 0px;
+        min-width: 162px;
+        min-height: 34px;
+        background: url("img/submitBackground.png") repeat-x;
+        margin: 8px 0px;
+        cursor: pointer;
+      }
+
+      input[type="submit"].gameControls {
+        font-family: Arial;
+        font-size: 16px;
+        color: #ffffff;
+        text-transform: uppercase;
+        border: 0px;
+        min-width: 28px;
+        min-height: 28px;
+        background: url("img/submitSmallBackground.png") repeat-x;
+        margin: 8px 0px;
+        padding: 2px 16px;
+        cursor: pointer;
+      }
+
+      .gameControlSet {
+        height: 142px;
+        position: relative;
+        top: -8px;
+      }
+
+      #buttonSolve {
+        margin-top: 119px;
+        color: #ffaeae;
+      }
+
+      #youWon {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0px;
+        right: 0px;
+        background: url("img/shade.png") repeat;
+      }
+
+      #youWon div {
+        width: 400px;
+        background: #940302;
+        font-size: 40px;
+        color: #ffffff;
+        text-align: center;
+        padding: 40px;
+        margin: 100px auto 0px auto;
+      }
+
+      small {
+        font-size: 14px;
+        color: #fffd7b;
+      }
+
+      .noErrors {
+        font-size: 18px;
+        font-weight: bold;
+        color: #ffffff;
+      }
+
+      .errorsFound {
+        font-size: 18px;
+        font-weight: bold;
+        color: #ed823f;
+      }
+
+      .error {
+        border: 1px solid #ed823f;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="Wrapper">
+      <div id="Main">
+        <h1 id="PageTitle">HTML5 Sudoku</h1>
+        <div id="Content">
+          <div id="Column1">
+            <span
+              role="tab"
+              aria-selected="true"
+              aria-controls="demoIntro"
+              tabindex="100"
+              >In this demo we take the well-known game of Sudoku, and
+              demonstrate how developers can use HTML5 and JavaScript to create
+              an efficient algorithm to solve these puzzles. The algorithms draw
+              heavily on the Chakra engine’s support for ECMAScript 5 standard
+              array operations to rapidly solve many Sudoku games. You can also
+              manually solve Sudoku puzzles.</span
+            >
+            <br />
+            <br />
+            <br />
+            <label># of Games:</label>&nbsp;&nbsp;
+            <select id="difficulty">
+              <option value="1">1000</option>
+              <option value="2" selected>5000</option>
+              <option value="3">10000</option>
+            </select>
+            <input id="amazeButton" type="submit" value="SOLVE GAMES" />
+            <br />
+            <br />
+            <div id="calculating" style="display: none">
+              <img src="img/iconTime.png" alt="Calculating Clock" /><span
+                class="finishedLabel"
+                >Solving puzzles...</span
+              >
+            </div>
+            <div
+              role="tab"
+              aria-selected="true"
+              aria-controls="perfResults"
+              tabindex="200"
+              id="finishedCalculating"
+              style="display: none"
+            >
+              <img src="img/iconTime.png" alt="Calculating Clock" /><span
+                class="finishedLabel"
+                >Finished In:</span
+              >
+              <br />
+              <span id="timeFinished"></span>
+            </div>
+          </div>
+          <div id="sudokuBoard">
+            <table cellspacing="0" cellpadding="0">
+              <tr>
+                <td class="boardCellGroupA">
+                  <table cellspacing="1" cellpadding="0">
+                    <tr>
+                      <td class="boardCell">
+                        <div id="00" class="staticValue">
+                          <span>6</span>
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="01" class="editValue">
+                          <input />
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="02" class="editValue">
+                          <input />
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="boardCell">
+                        <div id="10" class="editValue">
+                          <input />
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="11" class="editValue">
+                          <input />
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="12" class="staticValue">
+                          <span>4</span>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="boardCell">
+                        <div id="20" class="staticValue">
+                          <span>2</span>
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="21" class="editValue">
+                          <input />
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="22" class="staticValue">
+                          <span>8</span>
+                        </div>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+                <td class="boardCellGroupB">
+                  <table cellspacing="1" cellpadding="0">
+                    <tr>
+                      <td class="boardCell">
+                        <div id="03" class="editValue">
+                          <input />
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="04" class="staticValue">
+                          <span>9</span>
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="05" class="staticValue">
+                          <span>8</span>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="boardCell">
+                        <div id="13" class="editValue">
+                          <input />
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="14" class="editValue">
+                          <input />
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="15" class="editValue">
+                          <input />
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="boardCell">
+                        <div id="23" class="editValue">
+                          <input />
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="24" class="editValue">
+                          <input />
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="25" class="editValue">
+                          <input />
+                        </div>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+                <td class="boardCellGroupA">
+                  <table cellspacing="1" cellpadding="0">
+                    <tr>
+                      <td class="boardCell">
+                        <div id="06" class="editValue">
+                          <input />
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="07" class="staticValue">
+                          <span>2</span>
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="08" class="staticValue">
+                          <span>4</span>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="boardCell">
+                        <div id="16" class="staticValue">
+                          <span>8</span>
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="17" class="staticValue">
+                          <span>3</span>
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="18" class="editValue">
+                          <input />
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="boardCell">
+                        <div id="26" class="staticValue">
+                          <span>1</span>
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="27" class="editValue">
+                          <input />
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="28" class="staticValue">
+                          <span>9</span>
+                        </div>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td class="boardCellGroupB">
+                  <table cellspacing="1" cellpadding="0">
+                    <tr>
+                      <td class="boardCell">
+                        <div id="30" class="editValue">
+                          <input />
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="31" class="staticValue">
+                          <span>6</span>
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="32" class="editValue">
+                          <input />
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="boardCell">
+                        <div id="40" class="editValue">
+                          <input />
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="41" class="staticValue">
+                          <span>9</span>
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="42" class="editValue">
+                          <input />
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="boardCell">
+                        <div id="50" class="editValue">
+                          <input />
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="51" class="staticValue">
+                          <span>5</span>
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="52" class="staticValue">
+                          <span>1</span>
+                        </div>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+                <td class="boardCellGroupA">
+                  <table cellspacing="1" cellpadding="0">
+                    <tr>
+                      <td class="boardCell">
+                        <div id="33" class="editValue">
+                          <input />
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="34" class="staticValue">
+                          <span>8</span>
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="35" class="editValue">
+                          <input />
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="boardCell">
+                        <div id="43" class="staticValue">
+                          <span>1</span>
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="44" class="editValue">
+                          <input />
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="45" class="staticValue">
+                          <span>4</span>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="boardCell">
+                        <div id="53" class="editValue">
+                          <input />
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="54" class="staticValue">
+                          <span>2</span>
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="55" class="editValue">
+                          <input />
+                        </div>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+                <td class="boardCellGroupB">
+                  <table cellspacing="1" cellpadding="0">
+                    <tr>
+                      <td class="boardCell">
+                        <div id="36" class="staticValue">
+                          <span>3</span>
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="37" class="staticValue">
+                          <span>5</span>
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="38" class="editValue">
+                          <input />
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="boardCell">
+                        <div id="46" class="editValue">
+                          <input />
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="47" class="staticValue">
+                          <span>8</span>
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="48" class="editValue">
+                          <input />
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="boardCell">
+                        <div id="56" class="editValue">
+                          <input />
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="57" class="staticValue">
+                          <span>9</span>
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="58" class="editValue">
+                          <input />
+                        </div>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td class="boardCellGroupA">
+                  <table cellspacing="1" cellpadding="0">
+                    <tr>
+                      <td class="boardCell">
+                        <div id="60" class="staticValue">
+                          <span>5</span>
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="61" class="editValue">
+                          <input />
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="62" class="staticValue">
+                          <span>6</span>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="boardCell">
+                        <div id="70" class="editValue">
+                          <input />
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="71" class="staticValue">
+                          <span>2</span>
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="72" class="staticValue">
+                          <span>9</span>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="boardCell">
+                        <div id="80" class="staticValue">
+                          <span>7</span>
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="81" class="staticValue">
+                          <span>8</span>
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="82" class="editValue">
+                          <input />
+                        </div>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+                <td class="boardCellGroupB">
+                  <table cellspacing="1" cellpadding="0">
+                    <tr>
+                      <td class="boardCell">
+                        <div id="63" class="editValue error">
+                          <input />
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="64" class="editValue">
+                          <input />
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="65" class="editValue">
+                          <input />
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="boardCell">
+                        <div id="73" class="editValue">
+                          <input />
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="74" class="editValue">
+                          <input />
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="75" class="editValue">
+                          <input />
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="boardCell">
+                        <div id="83" class="staticValue">
+                          <span>5</span>
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="84" class="staticValue">
+                          <span>1</span>
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="85" class="editValue">
+                          <input />
+                        </div>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+                <td class="boardCellGroupA">
+                  <table cellspacing="1" cellpadding="0">
+                    <tr>
+                      <td class="boardCell">
+                        <div id="66" class="staticValue">
+                          <span>9</span>
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="67" class="editValue">
+                          <input />
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="68" class="staticValue">
+                          <span>8</span>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="boardCell">
+                        <div id="76" class="staticValue">
+                          <span>5</span>
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="77" class="editValue">
+                          <input />
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="78" class="editValue">
+                          <input />
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="boardCell">
+                        <div id="86" class="editValue">
+                          <input />
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="87" class="editValue">
+                          <input />
+                        </div>
+                      </td>
+                      <td class="boardCell">
+                        <div id="88" class="staticValue">
+                          <span>6</span>
+                        </div>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </div>
+          <div id="Column2">
+            <div class="gameControlSet">
+              <input
+                id="newGameButton"
+                type="submit"
+                value="NEW GAME"
+                class="gameControls"
+              />
+              <br />
+              <label> Level: </label>&nbsp;&nbsp;
+              <select id="difficulty">
+                <option value="1" selected>Easy</option>
+                <option value="2">Medium</option>
+                <option value="3">Hard</option>
+                <option value="4">Very Hard</option>
+                <option value="5">Insane</option>
+              </select>
+            </div>
+            <div class="gameControlSet">
+              <input
+                id="checkButton"
+                type="submit"
+                value="CHECK &#x2713;"
+                class="gameControls"
+              />
+              <br />
+              <span
+                id="errorsFound"
+                class="errorsFound"
+                style="display: none"
+                role="tab"
+                aria-selected="true"
+                aria-controls="ErrorsFound"
+                tabindex="300"
+                >MISTAKE FOUND</span
+              >
+              <span
+                id="noErrors"
+                class="noErrors"
+                style="display: none"
+                role="tab"
+                aria-selected="true"
+                aria-controls="NoErrorsFound"
+                tabindex="400"
+                >LOOKIN GOOD</span
+              >
+            </div>
+            <div class="gameControlSet">
+              <input
+                id="solveButton"
+                type="submit"
+                value="SOLVE"
+                class="gameControls"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="youWon" style="display: none">
+      <div>
+        <span
+          role="alert"
+          aria-selected="true"
+          aria-controls="youWin"
+          tabindex="500"
+          >YOU WIN!</span
+        >
+        <br />
+        <small
+          role="tab"
+          aria-selected="true"
+          aria-controls="youWinText"
+          tabindex="600"
+        >
+          Great job. Can you do it again?
+        </small>
+        <br />
+        <br />
+        <input
+          id="winNewGameButton"
+          type="submit"
+          value="NEW GAME"
+          class="gameControls"
+        />
+        <input
+          id="winCloseButton"
+          type="submit"
+          value="CLOSE"
+          class="gameControls"
+        />
+      </div>
+    </div>
+    <script>
+      function solveSudoku($, e) {
+        var e = e || {};
+        e.easy = !0;
+        for (
+          var t = JSON.parse(JSON.stringify($)),
+            n = [[], [], [], [], [], [], [], [], []],
+            r = 0;
+          r < 9;
+          r++
+        )
+          for (var o = 0; o < 9; o++)
+            n[r][o] = [!1, !0, !0, !0, !0, !0, !0, !0, !0, !0];
+        var a = !1,
+          l = !1,
+          i = !1,
+          u = !1,
+          s = 0;
+        outerLoop: for (; !a && !l; ) {
+          (a = !0), (i = !1), s++;
+          for (var d = [], v = 9, r = 0; r < 9; r++)
+            for (var o = 0; o < 9; o++)
+              if (0 === t[r][o]) {
+                a = !1;
+                var f,
+                  _,
+                  c = n[r][o];
+                1 === s
+                  ? ((f = 3 * getZone(r)),
+                    (_ = 3 * getZone(o)),
+                    (c[10] = f),
+                    (c[11] = _))
+                  : ((f = c[10]), (_ = c[11])),
+                  reducePossibilities(t, r, o, c, f, _) && (i = !0);
+                for (var y = 0, g = 0, m = 1; m <= 9; m++)
+                  c[m] && (y++, (g = m));
+                if (0 === y) {
+                  l = !0;
+                  break outerLoop;
+                }
+                if (1 === y) {
+                  (t[r][o] = g), (i = !0);
+                  continue;
+                }
+                if (u) {
+                  var h = checkFreedoms(t, r, o, n, f, _);
+                  if (0 !== h) {
+                    (t[r][o] = h), (i = !0);
+                    continue;
+                  }
+                  y === v ? d.push([r, o]) : y < v && ((v = y), (d = [[r, o]]));
+                }
+              }
+          if (!1 === i && !1 === a) {
+            if (!1 === u) {
+              (u = !0), (e.medium = !0);
+              continue;
+            }
+            return solveByGuessing(t, n, d, e);
+          }
+        }
+        return l ? null : t;
+      }
+      function getZone($) {
+        return $ < 3 ? 0 : $ < 6 ? 1 : 2;
+      }
+      function reducePossibilities($, e, t, n, r, o) {
+        for (var a = !1, l = 0; l < 9; l++)
+          (n[$[e][l]] || n[$[l][t]]) && (a = !0),
+            (n[$[e][l]] = !1),
+            (n[$[l][t]] = !1);
+        for (var i = r; i <= r + 2; i++)
+          for (var u = o; u <= o + 2; u++) {
+            var s = $[i][u];
+            n[s] && (a = !0), (n[s] = !1);
+          }
+        return a;
+      }
+      function checkFreedoms($, e, t, n, r, o) {
+        for (
+          var a = 0,
+            l = n[e][t],
+            i = l.slice(0),
+            u = l.slice(0),
+            s = l.slice(0),
+            d = 0;
+          d < 9;
+          d++
+        )
+          for (var v = 1; v <= 9; v++)
+            0 === $[e][d] && n[e][d][v] && d !== t && (i[v] = !1),
+              0 === $[d][t] && n[d][t][v] && d !== e && (u[v] = !1);
+        for (var f = 0, _ = 0, c = 0, y = 0, d = 1; d <= 9; d++)
+          i[d] && (f++, (c = d)), u[d] && (_++, (y = d));
+        if (1 === f) return c;
+        if (1 === _) return y;
+        for (var g = r; g <= r + 2; g++)
+          for (var m = o; m <= o + 2; m++)
+            for (var v = 1; v <= 9; v++)
+              0 === $[g][m] &&
+                n[g][m][v] &&
+                (g !== e || m !== t) &&
+                (s[v] = !1);
+        for (var h = 0, p = 0, d = 1; d <= 9; d++) s[d] && (h++, (p = d));
+        return 1 == h && (a = p), a;
+      }
+      function solveByGuessing($, e, t, n) {
+        if (t.length < 1) return null;
+        "hard" in n ? (n.vhard = !0) : (n.hard = !0);
+        for (
+          var r = t[getRandom(t.length)], o = [], a = e[r[0]][r[1]], l = 1;
+          l <= 9;
+          l++
+        )
+          a[l] && o.push(l);
+        shuffleArray(o);
+        for (var l = 0; l < o.length; l++) {
+          $[r[0]][r[1]] = o[l];
+          var i = solveSudoku($, n);
+          if (null != i) return i;
+        }
+        return null;
+      }
+      function getRandom($) {
+        return Math.floor(Math.random() * $);
+      }
+      function shuffleArray($) {
+        var e = $.length;
+        if (0 !== e)
+          for (; --e; ) {
+            var t = Math.floor(Math.random() * (e + 1)),
+              n = $[e];
+            ($[e] = $[t]), ($[t] = n);
+          }
+      }
+      function generatePuzzle($) {
+        1 !== $ && 2 !== $ && 3 !== $ && 4 !== $ && 5 !== $ && ($ = 1);
+        for (
+          var e = solveSudoku(emptyPuzzle), t = Array(81), n = 0;
+          n < 81;
+          n++
+        )
+          t[n] = n;
+        shuffleArray(t);
+        for (
+          var r = 81, n = 0;
+          n < 81 && !(r <= 25) && (1 != $ || !(r <= 35));
+          n++
+        ) {
+          var o = t[n],
+            a = Math.floor(o / 9),
+            l = o % 9,
+            i = e[a][l],
+            u = {};
+          (e[a][l] = 0), solveSudoku(e, u);
+          var s = !1;
+          $ <= 2 && u.medium
+            ? (s = !0)
+            : $ <= 3 && u.hard
+            ? (s = !0)
+            : $ <= 4 && u.vhard && (s = !0),
+            s ? (e[a][l] = i) : r--;
+        }
+        return e;
+      }
+      function verifySolution($, e) {
+        var t = {};
+        if (((t.valid = !1), null === $))
+          return (
+            window.console && console.log("Not a board"),
+            (t.invalidBoard = "Board was null"),
+            t
+          );
+        for (
+          var n = [],
+            r = [],
+            o = [
+              [[], [], []],
+              [[], [], []],
+              [[], [], []],
+            ],
+            a = 0;
+          a < 9;
+          a++
+        )
+          n.push([]), r.push([]);
+        for (var a = 0; a < 9; a++)
+          for (var l = 0; l < 9; l++) {
+            var i = $[a][l];
+            if (0 === i) {
+              if (e) return (t.notFullySolved = "Board still has unknowns"), t;
+              continue;
+            }
+            if (i in n[a]) return (t.badRow = a), t;
+            if (((n[a][i] = !0), i in r[l])) return (t.badCol = l), t;
+            r[l][i] = !0;
+            var u = o[getZone(a)][getZone(l)];
+            if (i in u)
+              return (t.badCube = [3 * getZone(a), 3 * getZone(l)]), t;
+            u[i] = !0;
+          }
+        return (t.valid = !0), t;
+      }
+      !(function () {
+        var $ = 31337,
+          e = Math.random,
+          t = function () {
+            var e = (214013 * $ + 2531011) % 4294967296;
+            return ($ = e), e / 4294967296;
+          };
+        (Math.enableFakeRandom = function () {
+          Math.random = t;
+        }),
+          (Math.disableFakeRandom = function () {
+            Math.random = e;
+          }),
+          (Math.fakeRandomSeed = function (e) {
+            $ = e;
+          });
+      })();
+      var easyPuzzle = [
+          [5, 3, 0, 0, 7, 0, 0, 0, 0],
+          [6, 0, 0, 1, 9, 5, 0, 0, 0],
+          [0, 9, 8, 0, 0, 0, 0, 6, 0],
+          [8, 0, 0, 0, 6, 0, 0, 0, 3],
+          [4, 0, 0, 8, 0, 3, 0, 0, 1],
+          [7, 0, 0, 0, 2, 0, 0, 0, 6],
+          [0, 6, 0, 0, 0, 0, 2, 8, 0],
+          [0, 0, 0, 4, 1, 9, 0, 0, 5],
+          [0, 0, 0, 0, 8, 0, 0, 7, 9],
+        ],
+        easyPuzzle2 = [
+          [1, 6, 0, 0, 0, 3, 0, 0, 0],
+          [2, 0, 0, 7, 0, 6, 0, 1, 4],
+          [0, 4, 5, 0, 8, 1, 0, 0, 7],
+          [5, 0, 8, 4, 0, 0, 0, 0, 0],
+          [0, 0, 4, 3, 0, 8, 9, 0, 0],
+          [0, 0, 0, 0, 0, 7, 2, 0, 8],
+          [8, 0, 0, 6, 3, 0, 1, 9, 0],
+          [6, 3, 0, 1, 0, 5, 0, 0, 2],
+          [0, 0, 0, 8, 0, 0, 0, 3, 6],
+        ],
+        easyPuzzle3 = [
+          [8, 1, 0, 0, 2, 9, 0, 0, 0],
+          [4, 0, 6, 0, 7, 3, 0, 5, 1],
+          [0, 7, 0, 0, 0, 0, 8, 0, 2],
+          [0, 0, 4, 5, 0, 0, 0, 0, 6],
+          [7, 6, 0, 0, 0, 0, 0, 1, 3],
+          [1, 0, 0, 0, 0, 6, 2, 0, 0],
+          [2, 0, 7, 0, 0, 0, 0, 8, 0],
+          [6, 9, 0, 2, 8, 0, 3, 0, 5],
+          [0, 0, 0, 9, 6, 0, 0, 2, 4],
+        ],
+        solvedPuzzle = [
+          [5, 3, 4, 6, 7, 8, 9, 1, 2],
+          [6, 7, 2, 1, 9, 5, 3, 4, 8],
+          [1, 9, 8, 3, 4, 2, 5, 6, 7],
+          [8, 5, 9, 7, 6, 1, 4, 2, 3],
+          [4, 2, 6, 8, 5, 3, 7, 9, 1],
+          [7, 1, 3, 9, 2, 4, 8, 5, 6],
+          [9, 6, 1, 5, 3, 7, 2, 8, 4],
+          [2, 8, 7, 4, 1, 9, 6, 3, 5],
+          [3, 4, 5, 2, 8, 6, 1, 7, 9],
+        ],
+        invalidPuzzle = [
+          [5, 3, 4, 6, 7, 8, 9, 1, 2],
+          [6, 7, 2, 1, 9, 5, 3, 4, 8],
+          [1, 9, 8, 3, 4, 2, 5, 6, 7],
+          [8, 5, 9, 7, 6, 1, 4, 2, 3],
+          [4, 2, 6, 8, 5, 3, 7, 9, 1],
+          [7, 1, 3, 9, 2, 4, 8, 5, 6],
+          [9, 6, 1, 5, 3, 7, 2, 8, 4],
+          [8, 2, 7, 4, 1, 9, 6, 3, 5],
+          [3, 4, 5, 2, 8, 6, 1, 7, 9],
+        ],
+        hardPuzzle = [
+          [0, 0, 3, 0, 0, 8, 0, 0, 0],
+          [0, 4, 0, 0, 0, 0, 0, 0, 0],
+          [0, 8, 0, 3, 5, 0, 9, 0, 0],
+          [8, 0, 5, 0, 0, 6, 0, 0, 0],
+          [1, 0, 0, 7, 3, 2, 0, 0, 8],
+          [0, 0, 0, 8, 0, 0, 3, 0, 1],
+          [0, 0, 8, 0, 1, 4, 0, 7, 0],
+          [0, 0, 0, 0, 0, 0, 0, 5, 0],
+          [0, 0, 0, 9, 0, 0, 2, 0, 0],
+        ],
+        mediumPuzzle = [
+          [0, 8, 3, 7, 0, 0, 0, 9, 0],
+          [0, 0, 7, 0, 5, 0, 6, 4, 0],
+          [0, 0, 0, 9, 0, 0, 0, 0, 3],
+          [0, 0, 0, 1, 0, 0, 0, 0, 7],
+          [0, 6, 9, 2, 0, 4, 3, 8, 0],
+          [7, 0, 0, 0, 0, 9, 0, 0, 0],
+          [9, 0, 0, 0, 0, 3, 0, 0, 0],
+          [0, 5, 6, 0, 2, 0, 4, 0, 0],
+          [0, 1, 0, 0, 0, 7, 5, 3, 0],
+        ],
+        emptyPuzzle = [
+          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        ];
+      function stressTest() {
+        var $ = 0,
+          e = window.setInterval(function () {
+            ++$ > 500 &&
+              (window.console && console.log("finished"),
+              window.clearInterval(e));
+            var t = solveSudoku(emptyPuzzle);
+            !1 === verifySolution(t).valid &&
+              (window.console && console.log("Boo! " + $), printBoard(t));
+          }, 1);
+      }
+      function cellInputHandler($) {
+        this.value.match(/^[1-9]$/) || (this.value = "");
+      }
+      function renderBoard($) {
+        for (var e = 0; e < 9; e++)
+          for (var t = 0; t < 9; t++) {
+            var n,
+              r,
+              o = "" + e + t,
+              a = document.getElementById(o),
+              l = $[e][t];
+            0 === l
+              ? ((n = document.createElement("input")).setAttribute(
+                  "maxlength",
+                  1
+                ),
+                n.addEventListener("keyup", cellInputHandler, !1),
+                n.addEventListener("blur", cellInputHandler, !1),
+                (r = "editValue"))
+              : (((n = document.createElement("span")).textContent = l),
+                (r = "staticValue")),
+              (a.innerHTML = ""),
+              a.setAttribute("class", r),
+              a.appendChild(n);
+          }
+      }
+      function renderSolvedBoard($) {
+        for (var e = 0; e < 9; e++)
+          for (var t = 0; t < 9; t++) {
+            var n = "" + e + t,
+              r = document.getElementById(n),
+              o = $[e][t],
+              a = r.children[0];
+            "INPUT" === a.tagName && (a.value = o);
+          }
+      }
+      function getCurrentBoard() {
+        for (var $ = Array(9), e = 0; e < 9; e++)
+          for (var t = 0; t < 9; t++) {
+            0 === t && ($[e] = Array(9));
+            var n = "" + e + t,
+              r = document.getElementById(n).children[0],
+              o = "0";
+            "INPUT" === r.tagName
+              ? (o = r.value)
+              : "SPAN" == r.tagName && (o = r.textContent),
+              (o = o.match(/^[1-9]$/) ? parseInt(o) : 0),
+              ($[e][t] = o);
+          }
+        return $;
+      }
+      function printBoard($) {
+        for (var e = 0; e < 9; e++) {
+          for (var t = "", n = 0; n < 9; n++) t += " " + $[e][n];
+          window.console && console.log(t);
+        }
+      }
+      function solveTest($, e) {
+        var t = 2e3,
+          n = 200;
+        switch ($) {
+          case 1:
+            (t = 475), (n = 25);
+            break;
+          case 2:
+            (t = 2375), (n = 125);
+            break;
+          case 3:
+            (t = 4750), (n = 250);
+        }
+        renderBoard(easyPuzzle);
+        var r = 0,
+          o = [];
+        o.push(function () {
+          r += solveTestHelper(easyPuzzle, t);
+        }),
+          o.push(function () {
+            r += solveTestHelper(easyPuzzle2, t);
+          }),
+          o.push(function () {
+            r += solveTestHelper(mediumPuzzle, n);
+          }),
+          o.push(function () {
+            r += solveTestHelper(hardPuzzle, n);
+          }),
+          o.push(function () {
+            document.getElementById("timeFinished").textContent =
+              r.toFixed(3) + "s";
+          }),
+          o.push(e);
+        var a = 0,
+          l = function () {
+            a < o.length && (o[a](), a++, window.setTimeout(l, 300));
+          };
+        window.setTimeout(l, 300);
+      }
+      function solveTestHelper($, e) {
+        for (var t = null, n = new Date(), r = 0; r < e; r++)
+          t = solveSudoku($);
+        var o = new Date();
+        return (
+          renderBoard($),
+          renderSolvedBoard(t),
+          (o.getTime() - n.getTime()) / 1e3
+        );
+      }
+      function initialize() {
+        var $ = generatePuzzle();
+        renderBoard($);
+        var e = document.getElementById("amazeButton"),
+          t = document.getElementById("calculating"),
+          n = document.getElementById("finishedCalculating"),
+          r = document.getElementById("youWon"),
+          o = document.getElementById("noErrors"),
+          a = document.getElementById("errorsFound"),
+          l = document.getElementById("difficulty"),
+          i = [],
+          u = !1,
+          s = function () {
+            (a.style.display = "none"), (o.style.display = "none");
+            for (var $ = 0; $ < i.length; $++)
+              i[$].setAttribute(
+                "class",
+                i[$].getAttribute("class").replace(" error", "")
+              );
+            i = [];
+          };
+        e.addEventListener(
+          "click",
+          function () {
+            if (!u) {
+              var e = parseInt(l.options[l.selectedIndex].value);
+              (u = !0),
+                s(),
+                (n.style.display = "none"),
+                (t.style.display = "block"),
+                solveTest(e, function () {
+                  (n.style.display = "block"),
+                    (t.style.display = "none"),
+                    (u = !1),
+                    ($ = hardPuzzle);
+                });
+            }
+          },
+          !1
+        ),
+          document.getElementById("checkButton").addEventListener(
+            "click",
+            function () {
+              s();
+              var $ = getCurrentBoard(),
+                e = verifySolution($);
+              if (e.valid) {
+                var t = [
+                  "LOOKIN GOOD",
+                  "KEEP GOING",
+                  "AWESOME",
+                  "EXCELLENT",
+                  "NICE",
+                  "SWEET",
+                  "LOOKS GOOD TO ME",
+                ];
+                if (verifySolution($, !0).valid) r.style.display = "block";
+                else {
+                  var n = getRandom(t.length);
+                  (o.textContent = t[n]), (o.style.display = "block");
+                }
+              } else {
+                if ("badRow" in e)
+                  for (var l = e.badRow, u = 0; u < 9; u++) {
+                    var d = "" + l + u,
+                      v = document.getElementById(d);
+                    v.setAttribute("class", v.getAttribute("class") + " error"),
+                      i.push(v);
+                  }
+                else if ("badCol" in e)
+                  for (var f = e.badCol, u = 0; u < 9; u++) {
+                    var d = "" + u + f,
+                      v = document.getElementById(d);
+                    v.setAttribute("class", v.getAttribute("class") + " error"),
+                      i.push(v);
+                  }
+                else if ("badCube" in e)
+                  for (
+                    var _ = e.badCube[0], c = e.badCube[1], y = _ + 2;
+                    y >= _;
+                    y--
+                  )
+                    for (var g = c + 2; g >= c; g--) {
+                      var d = "" + y + g,
+                        v = document.getElementById(d);
+                      v.setAttribute(
+                        "class",
+                        v.getAttribute("class") + " error"
+                      ),
+                        i.push(v);
+                    }
+                a.style.display = "block";
+              }
+            },
+            !1
+          ),
+          document.getElementById("winCloseButton").addEventListener(
+            "click",
+            function () {
+              r.style.display = "none";
+            },
+            !1
+          ),
+          document.getElementById("winNewGameButton").addEventListener(
+            "click",
+            function () {
+              s(),
+                renderBoard(
+                  ($ = generatePuzzle(
+                    parseInt(l.options[l.selectedIndex].value)
+                  ))
+                ),
+                (r.style.display = "none");
+            },
+            !1
+          ),
+          document.getElementById("newGameButton").addEventListener(
+            "click",
+            function () {
+              s(),
+                renderBoard(
+                  ($ = generatePuzzle(
+                    parseInt(l.options[l.selectedIndex].value)
+                  ))
+                );
+            },
+            !1
+          ),
+          document.getElementById("solveButton").addEventListener(
+            "click",
+            function () {
+              s(), renderSolvedBoard(solveSudoku($));
+            },
+            !1
+          ),
+          addEventListener(
+            "mouseup",
+            function ($) {
+              1 === $.which && (o.style.display = "none");
+            },
+            !1
+          );
+      }
+      addEventListener("DOMContentLoaded", initialize, !1);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>이미지 선택 예제</title>
+    <style>
+      .thumbnail {
+        width: 100px;
+        height: 100px;
+        margin: 5px;
+        object-fit: cover;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>이미지 선택</h2>
+    <input
+      type="file"
+      accept="image/*"
+      multiple
+      onchange="previewImages(event)"
+    />
+    <div id="selected-images">
+      <h3>선택된 이미지</h3>
+      <div id="thumbnails-container"></div>
+    </div>
+
+    <script>
+      let selectedImageFiles = [];
+      const thumbnailsContainer = document.getElementById(
+        "thumbnails-container"
+      );
+      const selectedImagesContainer =
+        document.getElementById("selected-images");
+
+      function previewImages(event) {
+        thumbnailsContainer.innerHTML = ""; // 썸네일 컨테이너 초기화
+        selectedImageFiles = []; // 이미지 파일 배열 초기화
+
+        const files = event.target.files;
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          selectedImageFiles.push(file); // 이미지 파일을 배열에 추가
+
+          const reader = new FileReader();
+
+          reader.onload = function (e) {
+            const thumbnail = document.createElement("img");
+            thumbnail.classList.add("thumbnail");
+            thumbnail.src = e.target.result;
+            thumbnailsContainer.appendChild(thumbnail);
+          };
+
+          reader.readAsDataURL(file);
+        }
+      }
+
+      // 선택된 이미지를 화면에 표시하는 함수
+      function displaySelectedImages() {
+        const selectedImagesList = document.createElement("ul");
+
+        for (let i = 0; i < selectedImageFiles.length; i++) {
+          const listItem = document.createElement("li");
+          const image = document.createElement("img");
+          image.src = URL.createObjectURL(selectedImageFiles[i]);
+          image.classList.add("thumbnail");
+          listItem.appendChild(image);
+          selectedImagesList.appendChild(listItem);
+        }
+
+        selectedImagesContainer.appendChild(selectedImagesList);
+      }
+    </script>
+  </body>
+</html>

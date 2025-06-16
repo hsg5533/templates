@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      h1 {
+        background-size: 200% 100%;
+        background-image: linear-gradient(
+          to right,
+          red,
+          orange,
+          yellow,
+          green,
+          blue,
+          indigo,
+          purple
+        );
+        animation: gradient 4s ease infinite;
+        width: 300px;
+        text-align: center;
+        border-radius: 20px;
+        color: white;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      @keyframes gradient {
+        0% {
+          background-position: 0%;
+        }
+        14% {
+          background-position: 100%;
+        }
+        28% {
+          background-position: 0%;
+        }
+        42% {
+          background-position: 100%;
+        }
+        71% {
+          background-position: 100%;
+        }
+        85% {
+          background-position: 0%;
+        }
+        to {
+          background-position: -100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>무지개</h1>
+  </body>
+</html>

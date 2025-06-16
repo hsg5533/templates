@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ToDoList</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        font-family: "Poppins", sans-serif;
+        box-sizing: border-box;
+      }
+
+      body {
+        background-color: #78c1f3;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .container {
+        background-color: #fff;
+        padding: 25px;
+        width: 500px;
+        border-radius: 10px;
+      }
+
+      .todo_header {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .todo_body {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background-color: #edeef0;
+        border-radius: 30px;
+        padding-left: 20px;
+        margin-bottom: 20px;
+      }
+
+      .todo_body input {
+        flex: 1;
+        border: none;
+        outline: none;
+        background-color: transparent;
+        padding: 15px 0;
+        font-size: 20px;
+      }
+
+      .todo_body img {
+        cursor: pointer;
+        height: 55px;
+        width: 55px;
+        padding: 15px;
+        background-color: limegreen;
+        border-radius: 40px;
+      }
+
+      ul li {
+        list-style: none;
+        font-size: 18px;
+        cursor: pointer;
+        padding: 10px;
+      }
+
+      li {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background-color: #edeef0;
+        margin-bottom: 10px;
+        border-radius: 5px;
+      }
+
+      li div {
+        flex-grow: 1;
+      }
+
+      .todo-controls {
+        width: 25px;
+        height: 25px;
+        padding: 3px;
+        margin-right: 5px;
+      }
+
+      #todo_ul li input {
+        background-color: #edeef0;
+        width: 100%;
+        border-radius: 5px;
+        padding: 10px;
+        outline: none;
+        font-size: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="todo_header">
+        <h2>ToDo List</h2>
+        <img src="./img/notebook.gif" height="50px" />
+      </div>
+      <div class="todo_body">
+        <input type="text" id="todo_input" placeholder="Add your task" />
+        <img src="./img/plus.png" id="AddUpdateClick" />
+      </div>
+      <ul id="todo_ul"></ul>
+    </div>
+    <script>
+      const todoInput = document.getElementById("todo_input");
+      const todoUl = document.getElementById("todo_ul");
+      const addUpdateClick = document.getElementById("AddUpdateClick");
+      let toDos = [];
+
+      function save() {
+        localStorage.setItem("todos", JSON.stringify(toDos));
+      }
+
+      function CreateToDo() {
+        const newText = todoInput.value.trim();
+        if (!newText) {
+          alert("Please Enter your todo text!");
+          return;
+        }
+        const todoobj = {
+          id: toDos.length + 1,
+          text: newText,
+        };
+        paintToDo(todoobj);
+        toDos.push(todoobj);
+        save();
+        todoInput.value = "";
+      }
+
+      function paintToDo(todoobj) {
+        const li = document.createElement("li");
+        li.id = todoobj.id;
+        const div = document.createElement("div");
+        div.textContent = todoobj.text;
+        div.addEventListener("click", CompleteTodoItem);
+        const editimg = createControlImg("./img/pencil.png", "edit");
+        const deleimg = createControlImg("./img/delete.png", "delete");
+        deleimg.addEventListener("click", deleteTodo);
+        editimg.addEventListener("click", editToDo);
+        li.append(div, editimg, deleimg);
+        todoUl.appendChild(li);
+      }
+
+      function createControlImg(src, className) {
+        const img = document.createElement("img");
+        img.src = src;
+        img.className = `todo-controls ${className}`;
+        return img;
+      }
+
+      function deleteTodo(event) {
+        const li = event.target.parentElement;
+        toDos = toDos.filter((todo) => todo.id !== parseInt(li.id));
+        li.remove();
+        save();
+      }
+
+      function CompleteTodoItem(e) {
+        const style = e.target.style;
+        style.textDecoration =
+          style.textDecoration !== "line-through" ? "line-through" : "none";
+        style.color =
+          style.textDecoration !== "line-through" ? "gray" : "black";
+      }
+
+      function editToDo(event) {
+        const li = event.target.parentElement;
+        const div = li.querySelector("div");
+        const input = document.createElement("input");
+        input.type = "text";
+        input.value = div.textContent;
+        input.addEventListener("change", (e) => {
+          const newTodo = e.target.value.trim();
+          div.textContent = newTodo;
+          toDos = toDos.map((todo) =>
+            todo.id === parseInt(li.id) ? { text: newTodo, id: todo.id } : todo
+          );
+          save();
+        });
+        li.replaceChildren(input);
+      }
+
+      function gettodo() {
+        const loadedTodo = localStorage.getItem("todos");
+        if (loadedTodo) {
+          toDos = JSON.parse(loadedTodo);
+          toDos.forEach(paintToDo);
+        }
+      }
+
+      todoInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+          CreateToDo();
+        }
+      });
+
+      addUpdateClick.addEventListener("click", CreateToDo);
+
+      gettodo();
+    </script>
+  </body>
+</html>

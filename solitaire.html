@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Raleway:200,800"
+      rel="stylesheet"
+    />
+    <title>Solitaire</title>
+    <style>
+      body,
+      html {
+        padding: 0;
+      }
+      h1,
+      html {
+        margin: 0;
+      }
+      button,
+      html {
+        font-family: Raleway, "Century Gothic", sans-serif;
+      }
+      .board .inner,
+      .nav-buttons {
+        max-width: 100vh;
+        width: 100vw;
+      }
+      .cd,
+      button {
+        cursor: pointer;
+      }
+      .cd *,
+      .closet > .icon {
+        pointer-events: none;
+      }
+      .cd h2,
+      .closet > .icon,
+      .nav-buttons,
+      .numd,
+      body {
+        text-align: center;
+      }
+      html {
+        width: 100vw;
+        height: 100vh;
+        background-image: linear-gradient(to bottom, #9b4f4f, #703939);
+      }
+      body {
+        margin: 0 auto;
+        color: #ccbdbd;
+      }
+      @keyframes flipover {
+        0% {
+          top: -10px;
+          transform: scaleX(0.001);
+        }
+        100% {
+          top: 0;
+          transform: scaleX(1);
+        }
+      }
+      @keyframes accordion {
+        0% {
+          transform: scaleX(0.9);
+        }
+        100% {
+          transform: scaleX(1);
+        }
+      }
+      @keyframes contract {
+        0% {
+          transform: scaleY(0.9);
+        }
+        100% {
+          transform: scaleY(1);
+        }
+      }
+      @keyframes expand {
+        0% {
+          transform: scaleY(1.1);
+        }
+        100% {
+          transform: scaleY(1);
+        }
+      }
+      @keyframes slideright {
+        0% {
+          left: -80px;
+          transform: scaleX(0.001);
+        }
+        100% {
+          left: 0;
+          transform: scaleX(1);
+        }
+      }
+      @keyframes slidedown {
+        0% {
+          top: -80px;
+          transform: scaleY(0.001);
+        }
+        100% {
+          top: 0;
+          transform: scaleY(1);
+        }
+      }
+      @keyframes glow {
+        0% {
+          margin-top: -76px;
+          transform: scale(1);
+          box-shadow: 0 0 15px -5px rgba(135, 65, 65, 0.5);
+        }
+        50% {
+          margin-top: -86px;
+          transform: scale(1.1);
+          box-shadow: 0 0 15px 5px rgba(135, 65, 65, 0.5);
+        }
+        100% {
+          margin-top: -76px;
+          transform: scale(1);
+          box-shadow: 0 0 15px -15px rgba(135, 65, 65, 0.5);
+        }
+      }
+      .flipover {
+        animation: 0.5s flipover;
+      }
+      .contract {
+        animation: 0.5s contract;
+      }
+      .expand {
+        animation: 0.5s expand;
+      }
+      .board {
+        margin: 0;
+        height: 95vh;
+      }
+      .board .inner {
+        padding: 10px 0px 0px 0px;
+        margin: auto;
+      }
+      .board.desktop {
+        padding-top: 65px;
+      }
+      .board.desktop .inner {
+        width: 540px;
+      }
+      .board.desktop .nav-buttons {
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: auto;
+        z-index: 1;
+        width: 100%;
+        max-width: 100%;
+      }
+      .board.desktop .nav-buttons .in {
+        width: 510px;
+        max-width: 96%;
+        padding: 10px 2%;
+        margin: auto;
+        position: relative;
+        z-index: 88888;
+      }
+      .board.desktop .nav-buttons .toggle,
+      .board.mobile.portrait .nav-buttons .toggle {
+        width: 60px;
+        height: 25px;
+      }
+      .board.desktop .nav-buttons .toggle label,
+      .board.mobile.portrait .nav-buttons .toggle label {
+        height: 25px;
+      }
+      .board.mobile.landscape .nav-buttons .toggle {
+        height: 60px;
+        width: 25px;
+      }
+      .board.mobile.landscape .nav-buttons .toggle label {
+        height: 60px;
+      }
+      .board.desktop .nav-buttons .in:after,
+      .clear:after {
+        content: "";
+        display: block;
+        clear: both;
+      }
+      .board.desktop .nav-buttons .in button.new,
+      .board.mobile.portrait .nav-buttons .in button.new,
+      .icon.club .c,
+      .icon.heart .b,
+      .icon.spade .b {
+        float: right;
+      }
+      .board.desktop .nav-buttons .in button.back,
+      .board.mobile.portrait .nav-buttons .in button.back {
+        position: static;
+        float: left;
+      }
+      .board.desktop .nav-buttons input:checked + label:after,
+      .board.mobile.portrait .nav-buttons input:checked + label:after {
+        float: right;
+        margin: 0;
+      }
+      .board.mobile.landscape .nav-buttons input:checked + label:after {
+        margin: 35px 0 0;
+      }
+      .board.desktop .nav-buttons .in .toggle:before,
+      .board.mobile.portrait .nav-buttons .in .toggle:before {
+        top: 4px;
+        left: -25px;
+      }
+      .board.desktop .nav-buttons .in .toggle:after,
+      .board.mobile.portrait .nav-buttons .in .toggle:after {
+        bottom: 4px;
+        right: -25px;
+      }
+      .board.mobile.landscape .nav-buttons .in .toggle:after,
+      .board.mobile.landscape .nav-buttons .in .toggle:before {
+        left: 4px;
+      }
+      .board.mobile.landscape .nav-buttons .in .toggle:before {
+        top: -25px;
+      }
+      .board.mobile.landscape .nav-buttons .in .toggle:after {
+        bottom: -25px;
+      }
+      .board.dark {
+        background-image: linear-gradient(to top, #0f0c0c, #251e1e);
+      }
+      .board.dark .cd.f {
+        background-color: #412020;
+        border-color: #2e2626;
+        background-image: repeating-linear-gradient(
+            55deg,
+            transparent,
+            transparent 18px,
+            #4b3e3e 19px,
+            transparent 20px
+          ),
+          repeating-linear-gradient(
+            -55deg,
+            transparent,
+            transparent 18px,
+            #161212 19px,
+            transparent 20px
+          ),
+          linear-gradient(to bottom, #221c1c, #4d3e3e);
+      }
+      .board.dark .closet {
+        background-color: #151111;
+      }
+      .board.dark.desktop .nav-buttons,
+      .board.dark.mobile .nav-buttons .in {
+        background-color: #302727;
+      }
+      .board.dark .nav-buttons button {
+        background-color: #0f0c0c;
+        color: #999;
+      }
+      .board.dark .cd.c,
+      .board.dark .cd.s {
+        color: #999;
+        background-color: #181818;
+        background-image: linear-gradient(to bottom, #272727, #373737);
+        border-color: #414141;
+      }
+      .board.dark .cd.d,
+      .board.dark .cd.h {
+        color: #e55;
+        background-color: #640000;
+        background-image: linear-gradient(to bottom, #580000, #741212);
+        border-color: #740808;
+      }
+      .board.light {
+        background-image: linear-gradient(to top, #ce9d9d, #e9e3e3);
+        color: #4b0707;
+      }
+      .board.light .cd.f {
+        background-color: #999;
+        border-color: #e9dbdb;
+        background-image: repeating-linear-gradient(
+            55deg,
+            transparent,
+            transparent 18px,
+            #fff 19px,
+            transparent 20px
+          ),
+          repeating-linear-gradient(
+            -55deg,
+            transparent,
+            transparent 18px,
+            #ccc 19px,
+            transparent 20px
+          ),
+          linear-gradient(to bottom, #d3c2c2, #f0e4e4);
+      }
+      .board.light .closet {
+        background-color: #f6e5e5;
+      }
+      .board.light.desktop .nav-buttons,
+      .board.light.mobile .nav-buttons .in {
+        background-color: #dcc0c0;
+      }
+      .board.light .nav-buttons button {
+        background-color: #e6dbdb;
+        color: #000;
+      }
+      .board.light .cd.c,
+      .board.light .cd.s {
+        color: #080808;
+        background-color: #fff;
+        background-image: linear-gradient(to bottom, #fff, #a7a7a7);
+        border-color: #9c9c9c;
+      }
+      .board.light .cd.d,
+      .board.light .cd.h {
+        color: #9e0000;
+        background-color: #fde3e3;
+        background-image: linear-gradient(to bottom, #ffe5e5, #ff8787);
+        border-color: #ff6c6c;
+      }
+      h1 {
+        padding: 100px 0 25px;
+        font-weight: 200;
+        font-size: 3em;
+      }
+      .cd,
+      .cd h2,
+      button {
+        font-weight: 700;
+      }
+      .won button {
+        color: #eee;
+        background-color: #c00;
+      }
+      .won button:hover {
+        color: #ccc;
+        background-color: maroon;
+      }
+      button {
+        border: 0;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-size: 18px;
+      }
+      .start-container button {
+        background-color: #333;
+        color: #eee;
+        min-width: 200px;
+        margin: 0 auto 20px;
+      }
+      button.resumer {
+        background-color: #d6b6b6;
+        color: #190101;
+      }
+      button:hover {
+        background-color: #c00;
+      }
+      .nav-buttons {
+        position: fixed;
+        bottom: 0;
+        top: 0;
+      }
+      .nav-buttons .in {
+        z-index: 200000;
+        width: 9%;
+        padding: 10px;
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+      }
+      .board.mobile.portrait .nav-buttons {
+        top: auto;
+        width: auto;
+        left: 0;
+        right: 0;
+      }
+      .board.mobile.portrait .nav-buttons .in {
+        width: auto;
+        position: relative;
+      }
+      .nav-buttons .in:after {
+        clear: both;
+        content: "";
+        display: block;
+      }
+      .nav-buttons .toggle {
+        display: block;
+        border-radius: 30px;
+        width: 25px;
+        height: 60px;
+        position: absolute;
+        margin: auto;
+        background: rgba(135, 64, 74, 0.49);
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+      }
+      .nav-buttons .toggle:after,
+      .nav-buttons .toggle:before {
+        content: "";
+        display: block;
+        position: absolute;
+        border-radius: 20px;
+        height: 15px;
+        width: 15px;
+      }
+      .nav-buttons .toggle:before {
+        background: #fff;
+      }
+      .nav-buttons .toggle:after {
+        background: #000;
+      }
+      .nav-buttons input {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+      .nav-buttons label {
+        display: block;
+        cursor: pointer;
+      }
+      .nav-buttons label:after {
+        content: "";
+        display: block;
+        background: #853f3f;
+        height: 25px;
+        width: 25px;
+        border-radius: 15px;
+      }
+      .nav-buttons button {
+        font-weight: 700;
+        padding: 10px 0;
+        width: 50px;
+      }
+      .nav-buttons .back {
+        position: absolute;
+        bottom: 15px;
+        margin: auto;
+        left: 0;
+        right: 0;
+      }
+      .numd {
+        opacity: 0.4;
+      }
+      .numd.len10 .icon,
+      .numd.len9 .icon {
+        width: 6px;
+        height: 6px;
+        margin: 2px;
+      }
+      .numd.len7 .icon,
+      .numd.len8 .icon {
+        width: 8px;
+        height: 8px;
+        margin: 2px;
+      }
+      .numd.len5 .icon,
+      .numd.len6 .icon {
+        width: 8px;
+        height: 8px;
+        margin: 7px 2px 1px;
+      }
+      .numd.len4 .icon {
+        width: 10px;
+        height: 10px;
+        margin: 2px;
+      }
+      .numd.len3 .icon {
+        width: 8px;
+        height: 8px;
+        margin: 4px auto 0;
+        display: block;
+      }
+      .icon,
+      .numd.len2 .icon {
+        width: 15px;
+        height: 15px;
+      }
+      .numd.len2 .icon {
+        margin: 9px 0 1px 3px;
+      }
+      .numd.len1 .icon {
+        width: 25px;
+        height: 25px;
+        margin: 7px auto 0;
+      }
+      .icon {
+        display: inline-block;
+      }
+      .icon span {
+        display: block;
+      }
+      .icon.diamond {
+        transform: scaleX(0.7);
+      }
+      .icon.diamond span {
+        width: 70%;
+        height: 70%;
+        margin-top: 21%;
+        margin-left: 14%;
+        transform: rotate(45deg);
+      }
+      .icon.heart .a,
+      .icon.heart .b {
+        border-radius: 50%;
+        width: 50%;
+        height: 52%;
+        margin-top: 14%;
+      }
+      .board.desktop .refuse-pile .cd.f,
+      .board.mobile.portrait .refuse-pile .cd.f,
+      .icon.club .b,
+      .icon.heart .a,
+      .icon.spade .a {
+        float: left;
+      }
+      .icon.heart .c {
+        clear: both;
+        transform: rotate(45deg);
+        width: 52%;
+        height: 52%;
+        margin-left: auto;
+        margin-right: auto;
+        position: relative;
+        top: -28%;
+      }
+      .icon.spade .a,
+      .icon.spade .b {
+        border-radius: 50%;
+        width: 43%;
+        height: 50%;
+        margin-top: 14%;
+      }
+      .icon.spade .c {
+        transform: rotate(45deg);
+        width: 55%;
+        height: 55%;
+        margin: 27% auto -44%;
+      }
+      .icon.spade .d {
+        margin: 0 auto;
+        width: 13%;
+        height: 78%;
+      }
+      .icon.club .a,
+      .icon.club .b,
+      .icon.club .c {
+        border-radius: 50%;
+        width: 46%;
+        height: 44%;
+      }
+      .icon.club .a {
+        margin: 8% auto -13%;
+      }
+      .icon.club .d {
+        margin: 0 auto;
+        width: 15%;
+        height: 70%;
+      }
+      .cd {
+        overflow: hidden;
+        padding: 3px;
+        text-align: right;
+        border: 5px solid #222;
+        margin: 5px;
+        float: left;
+        width: 40px;
+        height: 60px;
+        z-index: 999;
+        position: relative;
+        border-radius: 3px;
+        user-select: none;
+      }
+      .icon.club span,
+      .icon.spade span {
+        background: #999;
+      }
+      .icon.diamond span,
+      .icon.heart span {
+        background: #e55;
+      }
+      .cd p {
+        float: left;
+        padding: 0 0 5px;
+      }
+      .cd h2,
+      .cd p {
+        margin: 0;
+        line-height: 1;
+      }
+      .cd h2 {
+        padding: 6px 0 0;
+        font-size: 1.9em;
+      }
+      .cd hr {
+        opacity: 0.5;
+        margin: 0;
+        border-width: 1px 0 0;
+        border-style: solid;
+        clear: both;
+      }
+      .cd i {
+        display: inline-block;
+        margin: 3px;
+        height: 0;
+        width: 0;
+        border: 2px solid;
+        border-radius: 50%;
+      }
+      .stack {
+        padding-top: 70px;
+        min-height: 70px;
+        float: left;
+        transform-origin: 0 0;
+        background-size: 52px 74px;
+        background-repeat: no-repeat;
+        background-position: center 10px;
+      }
+      .board.dark .stack {
+        background-image: linear-gradient(#312727, #221c1c);
+      }
+      .board.light .stack {
+        background-image: linear-gradient(#e6dada, #e5d9d9);
+      }
+      .board.mobile.landscape .stack {
+        width: 9.5%;
+      }
+      .board.desktop .stack,
+      .board.mobile.portrait .stack {
+        width: 14.2%;
+      }
+      .board.desktop .stacks,
+      .board.mobile.portrait .stacks {
+        clear: both;
+        padding: 5px;
+      }
+      .stack .cd {
+        margin-bottom: 0;
+        margin-left: 9px;
+        margin-top: -50px;
+        box-shadow: 0 -3px 4px 1px rgba(0, 0, 0, 0.25);
+        transition: margin-top 0.5s;
+      }
+      .stack .cd.a:first-child,
+      .stack .cd.f,
+      .stack .cd.f:first-child {
+        margin-top: -60px;
+      }
+      .stack.len8 .cd.f {
+        margin-top: -65px;
+      }
+      .stack.len9 .cd.f {
+        margin-top: -67px;
+      }
+      .stack.len10 .cd.f,
+      .stack.len11 .cd.f,
+      .stack.len12 .cd.f,
+      .stack.len13 .cd.f,
+      .stack.len14 .cd.f,
+      .stack.len15 .cd.f,
+      .stack.len16 .cd.f {
+        margin-top: -70px;
+      }
+      .cd.f + .cd.a {
+        margin-top: -64px;
+      }
+      .board.mobile.landscape .refuse-pile {
+        width: 9%;
+        padding-top: 88px;
+        padding-left: 1%;
+        padding-bottom: 0;
+        float: left;
+        transform-origin: 0 0;
+      }
+      .board.mobile.landscape .refuse-pile .cd.f {
+        float: left;
+        margin-top: -77px;
+        box-shadow: -3px -2px 4px -2px rgba(0, 0, 0, 0.5);
+      }
+      .board.desktop .refuse-pile .cd.slide,
+      .board.mobile.portrait .refuse-pile .cd.slide {
+        animation: 0.5s slideright;
+      }
+      .board.mobile.landscape .refuse-pile .cd.slide {
+        animation: 0.5s slidedown;
+      }
+      .board.desktop .refuse-pile.accordion,
+      .board.mobile.portrait .refuse-pile.accordion {
+        animation: 0.5s accordion;
+        transform-origin: 0 0;
+      }
+      .board.desktop .refuse-pile,
+      .board.mobile.portrait .refuse-pile {
+        width: 185px;
+        float: left;
+        padding-top: 50px;
+        padding-left: 2%;
+      }
+      .board.desktop .refuse-pile .cd,
+      .board.desktop .refuse-pile .cd.f,
+      .board.mobile.portrait .refuse-pile .cd,
+      .board.mobile.portrait .refuse-pile .cd.f {
+        margin-top: -50px;
+        margin-bottom: 0;
+      }
+      .board.desktop .refuse-pile .cd,
+      .board.mobile.portrait .refuse-pile .cd {
+        float: right;
+        margin-right: 0;
+        margin-top: -50px;
+        box-shadow: 0 0 4px 1px rgba(0, 0, 0, 0.5);
+      }
+      .board.desktop .refuse-pile.all .cd.f,
+      .board.mobile.portrait .refuse-pile.all .cd.f {
+        margin-left: -53.6px;
+      }
+      .closet {
+        float: right;
+        text-align: left;
+        border-radius: 2px;
+        width: 57px;
+        height: 0;
+        padding: 81px 4px 5px;
+        margin: 0 0 5px;
+      }
+      .board.mobile.landscape .closets-area {
+        width: 10%;
+        float: right;
+        margin-right: 13%;
+      }
+      .board.desktop .closets-area,
+      .board.mobile.portrait .closets-area {
+        margin-right: 2%;
+      }
+      .board.desktop .closet,
+      .board.mobile.portrait .closet {
+        margin: 0 5px 0 0;
+      }
+      .closet .cd.glow {
+        animation: 0.5s glow;
+      }
+      .closet .cd {
+        margin: -76px 0 0;
+      }
+      .closet .cd:last-of-type {
+        box-shadow: 0 0 4px 1px rgba(0, 0, 0, 0.5);
+      }
+      .closet > .icon {
+        height: 36px;
+        position: absolute;
+        width: 35px;
+        line-height: 40px;
+        margin: -58px 0 0 12px;
+        font-size: 40px;
+        opacity: 0.5;
+      }
+      .board.desktop .refuse-pile.len24 .cd.f,
+      .board.mobile.portrait .refuse-pile.len24 .cd.f {
+        margin-left: -53.2px;
+      }
+      .board.desktop .refuse-pile.len23 .cd.f,
+      .board.mobile.portrait .refuse-pile.len23 .cd.f {
+        margin-left: -53.1px;
+      }
+      .board.desktop .refuse-pile.len22 .cd.f,
+      .board.mobile.portrait .refuse-pile.len22 .cd.f {
+        margin-left: -53px;
+      }
+      .board.desktop .refuse-pile.len21 .cd.f,
+      .board.mobile.portrait .refuse-pile.len21 .cd.f {
+        margin-left: -52.9px;
+      }
+      .board.desktop .refuse-pile.len20 .cd.f,
+      .board.mobile.portrait .refuse-pile.len20 .cd.f {
+        margin-left: -52.7px;
+      }
+      .board.desktop .refuse-pile.len19 .cd.f,
+      .board.mobile.portrait .refuse-pile.len19 .cd.f {
+        margin-left: -52.5px;
+      }
+      .board.desktop .refuse-pile.len18 .cd.f,
+      .board.mobile.portrait .refuse-pile.len18 .cd.f {
+        margin-left: -52.4px;
+      }
+      .board.desktop .refuse-pile.len17 .cd.f,
+      .board.mobile.portrait .refuse-pile.len17 .cd.f {
+        margin-left: -52px;
+      }
+      .board.desktop .refuse-pile.len16 .cd.f,
+      .board.mobile.portrait .refuse-pile.len16 .cd.f {
+        margin-left: -51.7px;
+      }
+      .board.desktop .refuse-pile.len15 .cd.f,
+      .board.mobile.portrait .refuse-pile.len15 .cd.f {
+        margin-left: -51.5px;
+      }
+      .board.desktop .refuse-pile.len14 .cd.f,
+      .board.mobile.portrait .refuse-pile.len14 .cd.f {
+        margin-left: -51px;
+      }
+      .board.desktop .refuse-pile.len13 .cd.f,
+      .board.mobile.portrait .refuse-pile.len13 .cd.f {
+        margin-left: -50.7px;
+      }
+      .board.desktop .refuse-pile.len12 .cd.f,
+      .board.mobile.portrait .refuse-pile.len12 .cd.f {
+        margin-left: -50px;
+      }
+      .board.desktop .refuse-pile.len11 .cd.f,
+      .board.mobile.portrait .refuse-pile.len11 .cd.f {
+        margin-left: -49.7px;
+      }
+      .board.desktop .refuse-pile.len10 .cd.f,
+      .board.mobile.portrait .refuse-pile.len10 .cd.f {
+        margin-left: -49px;
+      }
+      .board.desktop .refuse-pile.len9 .cd.f,
+      .board.mobile.portrait .refuse-pile.len9 .cd.f {
+        margin-left: -48px;
+      }
+      .board.desktop .refuse-pile.len8 .cd.f,
+      .board.mobile.portrait .refuse-pile.len8 .cd.f {
+        margin-left: -46px;
+      }
+      .board.desktop .refuse-pile.len7 .cd.f,
+      .board.mobile.portrait .refuse-pile.len7 .cd.f {
+        margin-left: -44px;
+      }
+      .board.desktop .refuse-pile.len6 .cd.f,
+      .board.mobile.portrait .refuse-pile.len6 .cd.f {
+        margin-left: -41px;
+      }
+      .board.desktop .refuse-pile.len5 .cd.f,
+      .board.mobile.portrait .refuse-pile.len5 .cd.f {
+        margin-left: -37px;
+      }
+      .board.desktop .refuse-pile.len4 .cd.f,
+      .board.mobile.portrait .refuse-pile.len4 .cd.f {
+        margin-left: -28px;
+      }
+      .board.desktop .refuse-pile.len2 .cd.f,
+      .board.desktop .refuse-pile.len3 .cd.f,
+      .board.mobile.portrait .refuse-pile.len2 .cd.f,
+      .board.mobile.portrait .refuse-pile.len3 .cd.f {
+        margin-left: 4px;
+      }
+      .board.desktop .refuse-pile .cd.f:first-child,
+      .board.mobile.portrait .refuse-pile .cd.f:first-child {
+        margin-left: 0;
+      }
+      @media (max-width: 505px) {
+        .closets-area {
+          clear: both;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      !(function () {
+        var e = [],
+          t = ["h", "s", "c", "d"],
+          a = { n1: "A", n11: "J", n12: "Q", n13: "K" },
+          s = {
+            h: '<div class="icon heart"><span class="a"></span><span class="b"></span><span class="c"></span></div>',
+            s: '<div class="icon spade"><span class="c"></span><span class="a"></span><span class="b"></span><span class="d"></span></div>',
+            c: '<div class="icon club"><span class="a"></span><span class="b"></span><span class="c"></span><span class="d"></span></div>',
+            d: '<div class="icon diamond"><span></span></div>',
+          },
+          n = {},
+          r = [],
+          l = {},
+          i = {},
+          c = !1;
+        function o() {
+          null !== f("currentGame") && (l = JSON.parse(f("currentGame"))),
+            (document.body.innerHTML =
+              '<div id="start-container" class="start-container"><h1>Solitaire</h1><button id="startnew">New game</button><br>' +
+              (null !== f("currentGame")
+                ? '<button id="resume-game" class="resumer">Resume previous</button>'
+                : "") +
+              "</div>");
+        }
+        function d() {
+          (l.steps = l.steps + 1),
+            (i = window.history.state),
+            window.history.pushState(
+              l,
+              null,
+              l.steps > 0 ? "#step" + l.steps : null
+            ),
+            (document.cookie = "color=" + (f("color") ? f("color") : "dark")),
+            (document.cookie = "currentGame=" + JSON.stringify(l)),
+            m(),
+            (i = l);
+        }
+        function f(e) {
+          for (var t = document.cookie.split("; "), a = 0; a < t.length; a++) {
+            var s = e + "=";
+            if (0 === t[a].indexOf(s)) return t[a].replace(s, "");
+          }
+          return null;
+        }
+        function u(e, t) {
+          var a = e.length;
+          return !!(a < t.length) && e === t.slice(-a);
+        }
+        function h(e, t) {
+          var n,
+            r,
+            l = document.createElement("div");
+          return (
+            ((l.data = e),
+            (l.className = "cd "),
+            (l.ontouchstart = function (e) {
+              return e.preventDefault(), p(e), !1;
+            }),
+            (l.ontouchmove = function (e) {
+              var t = e.changedTouches[0].clientX,
+                a = e.changedTouches[0].clientY;
+              g(e, t, a);
+            }),
+            (l.ontouchend = function (e) {
+              e.preventDefault();
+              var t = e.changedTouches[0].pageX,
+                a = e.changedTouches[0].pageY;
+              return v(e, t, a), !1;
+            }),
+            (l.onmousedown = function (e) {
+              p(e);
+            }),
+            (l.onmousemove = function (e) {
+              var t = e.clientX,
+                a = e.clientY;
+              g(e, t, a);
+            }),
+            (l.onmouseup = function (e) {
+              var t = e.pageX,
+                a = e.pageY;
+              v(e, t, a);
+            }),
+            e.folded)
+              ? (l.className = l.className + "f")
+              : ((l.className +=
+                  e.s + " n" + e.n + (e.accepting ? " a" : "") + (t || "")),
+                (l.innerHTML =
+                  ((n = e.n),
+                  (r = e.s),
+                  "<p>" +
+                    (a["n" + n] ? a["n" + n] : n) +
+                    "</p>" +
+                    s[r] +
+                    "<hr/>" +
+                    (function e(t, n) {
+                      if (t < 11) {
+                        for (
+                          var r = '<div class="numd len' + t + '">', l = 0;
+                          l < t;
+                          l++
+                        )
+                          r += s[n];
+                        return r + "</div>";
+                      }
+                      return '<h2 class="numd">' + a["n" + t] + "</h2>";
+                    })(n, r)))),
+            l
+          );
+        }
+        function p(e) {
+          if (
+            ((r = []),
+            e.target.className.indexOf("cd") > -1 && !e.target.data.folded)
+          ) {
+            (n = e.target.parentNode), r.push(e.target);
+            for (
+              var t = r[0].nextElementSibling;
+              n.id.indexOf("stack") > -1 && null !== t;
+
+            )
+              r.push(t), (t = t.nextElementSibling);
+          } else if (
+            e.target.className.indexOf("cd f") > -1 &&
+            e.target.parentNode.className.indexOf("refuse") > -1
+          ) {
+            if (e.target.nextElementSibling) {
+              var a = l.refuse[l.refuse.length - 1];
+              (a.folded = !0), l.refuse.pop(), l.refuse.unshift(a);
+            }
+            (l.refuse[l.refuse.length - 1].folded = !1), (r = []), d();
+          }
+        }
+        function g(e, t, a) {
+          if (r.length > 0)
+            for (
+              var s = t - 30, n = a + 15, l = 999999, i = 0;
+              i < r.length;
+              i++
+            )
+              (r[i].style =
+                "position: fixed; z-index: " +
+                l +
+                "; left: " +
+                s +
+                "px; top: " +
+                n +
+                "px"),
+                (n += 20),
+                (l += 100);
+        }
+        function v(e, t, a) {
+          var s = null,
+            i = n.id,
+            o = !1;
+          if (r.length > 0) {
+            for (
+              var f = r[0].data.s,
+                u = r[0].data.n,
+                h = r[0].data.colr,
+                p = document.getElementsByClassName("a"),
+                g = 0;
+              g < p.length;
+              g++
+            ) {
+              var v = p[g];
+              if (!v.data || v.data.id != r[0].data.id) {
+                var _ = v.offsetLeft,
+                  k = _ + v.offsetWidth,
+                  $ = v.offsetTop,
+                  b = $ + v.offsetHeight,
+                  N =
+                    v.className.indexOf("stack") > -1 &&
+                    0 === v.children.length,
+                  x =
+                    v.className.indexOf("closet") > -1 &&
+                    1 === v.children.length,
+                  E = v.parentNode.className.indexOf("stack") > -1,
+                  w = v.parentNode.className.indexOf("closet") > -1;
+                if (t >= _ && t <= k && a >= $ && a <= b) {
+                  if (N) {
+                    if (13 === u) {
+                      (s = l.stacks[v.id]), (o = !0);
+                      break;
+                    }
+                  } else if (x) {
+                    var y = v.getAttribute("data-suit");
+                    if (y === f && 1 === u && 1 === r.length) {
+                      (s = l.closets[v.id]), (o = !0);
+                      break;
+                    }
+                  } else if (w) {
+                    var y = v.data.s,
+                      C = v.data.n;
+                    if (y === f && C + 1 === u && 1 === r.length) {
+                      (s = l.closets[v.parentNode.id]), (o = !0);
+                      break;
+                    }
+                  } else if (E) {
+                    var C = v.data.n;
+                    if (v.data.colr !== h && C - 1 === u) {
+                      var s = l.stacks[v.parentNode.id],
+                        i = n.id;
+                      o = !0;
+                      break;
+                    }
+                  }
+                }
+              }
+            }
+            if (o) {
+              var O = l.stacks[i];
+              for (
+                "refuse" === i
+                  ? (O = l.refuse)
+                  : -1 === i.indexOf("stack") && (O = l.closets[i]);
+                r.length > 0;
+
+              )
+                1 === r.length && (r[0].data.accepting = !0),
+                  s.push(r[0].data),
+                  O.pop(),
+                  r.shift();
+              O.length &&
+                ("refuse" !== i && (O[O.length - 1].accepting = !0),
+                (O[O.length - 1].folded = !1)),
+                d(),
+                (function e() {
+                  for (var t = !0, a = 0; a < l.refuse.length; a++)
+                    l.refuse[a].folded && (t = !1);
+                  for (var s in l.stacks)
+                    for (var n = 0; n < l.stacks[s].length; n++)
+                      l.stacks[s][n].folded && (t = !1);
+                  if (t) {
+                    var r,
+                      i,
+                      o,
+                      f,
+                      u = l.closets;
+                    (c = !1),
+                      (i =
+                        52 -
+                        (u.c.length + u.d.length + u.h.length + u.s.length)),
+                      (o = 0),
+                      (f = setInterval(function e() {
+                        if (o >= i - 1)
+                          clearInterval(f),
+                            (document.getElementById("gameboard").innerHTML =
+                              '<div class="won"><h1>You won!</h1><button id="startnew">Start new game</button></div>');
+                        else {
+                          for (var t in l.closets) {
+                            var a = l.closets[t].length
+                              ? l.closets[t][l.closets[t].length - 1]
+                              : { s: t, n: 0 };
+                            for (var s in l.stacks) {
+                              var n = l.stacks[s][l.stacks[s].length - 1],
+                                r = l.refuse[l.refuse.length - 1];
+                              if (n && n.s == a.s && n.n === a.n + 1) {
+                                l.stacks[s].pop(), l.closets[t].push(n), o++;
+                                break;
+                              }
+                              if (r && r.s == a.s && r.n === a.n + 1) {
+                                l.refuse.pop(), l.closets[t].push(r), o++;
+                                break;
+                              }
+                            }
+                          }
+                          d();
+                        }
+                      }, 200));
+                  }
+                })();
+            } else (r = []), m();
+          }
+        }
+        function _() {
+          e = [];
+          for (
+            var a = {
+                steps: -28,
+                stacks: {
+                  stack1: [],
+                  stack2: [],
+                  stack3: [],
+                  stack4: [],
+                  stack5: [],
+                  stack6: [],
+                  stack7: [],
+                },
+                refuse: [],
+                closets: { c: [], d: [], h: [], s: [] },
+              },
+              s = 0;
+            s < t.length;
+            s++
+          )
+            for (var n = 1; n < 14; n++) e.push({ suit: t[s], num: n });
+          e = (function e(t) {
+            for (let a = t.length - 1; a > 0; a--) {
+              let s = Math.floor(Math.random() * (a + 1));
+              [t[a], t[s]] = [t[s], t[a]];
+            }
+            return t;
+          })(e);
+          for (var r = 0; r < e.length; r++) {
+            var i = document.createElement("div");
+            i.className = "cd f";
+            var o = {
+              s: e[r].suit,
+              n: e[r].num,
+              id: e[r].suit + e[r].num,
+              colr: "d" === e[r].suit || "h" === e[r].suit ? "r" : "b",
+              folded: !0,
+              accepting: !1,
+            };
+            (i.data = o), a.refuse.push(o);
+          }
+          var f = 0,
+            u = 2,
+            h = 1;
+          (l = a), d();
+          var p = setInterval(function e() {
+            if (29 === h) clearInterval(p);
+            else {
+              h++;
+              var t = a.refuse[a.refuse.length - 1];
+              a.refuse.pop(),
+                (8 == ++f || 1 === f) && ((t.folded = !1), (t.accepting = !0)),
+                8 === f && ((f = u), u++),
+                u < 9 && a.stacks["stack" + f].push(t),
+                (l = a),
+                d();
+            }
+          }, 100);
+          c = !0;
+        }
+        function m() {
+          document.body.innerHTML = "";
+          var e = document.createElement("div");
+          (e.className = "board clear " + (f("color") ? f("color") : "dark")),
+            (e.id = "gameboard");
+          var t = document.createElement("div");
+          t.className = "inner clear";
+          var a = document.createElement("div");
+          (a.className = "nav-buttons"),
+            (a.innerHTML =
+              '<div class="in"><button id="new-game" class="new">&#xff0b;</button><div class="toggle"><input type="checkbox" id="color" ' +
+              ("dark" === f("color") ? "checked" : "") +
+              '><label for="color"></label></div><button id="back-button" class="back">&larr;</button></div>'),
+            t.appendChild(a);
+          var n = document.createElement("div");
+          for (var r in ((n.className = "closets-area"), l.closets)) {
+            var o = document.createElement("div"),
+              d = l.closets[r],
+              u = i && i.closets ? i.closets[r] : [],
+              p = d.length > u.length ? " glow" : "";
+            (o.id = r),
+              (o.className = "closet closet" + r + (d.length ? "" : " a")),
+              (o.innerHTML = s[r]),
+              o.setAttribute("data-suit", r);
+            for (var g = 0; g < d.length; g++) o.appendChild(h(d[g], p));
+            n.appendChild(o);
+          }
+          var v = document.createElement("div"),
+            _ = i && i.refuse ? i.refuse[i.refuse.length - 1] : null,
+            m = l.refuse[l.refuse.length - 1],
+            p =
+              m &&
+              _ &&
+              (m.id !== _.id ||
+                m.folded !== _.folded ||
+                l.refuse.length !== i.refuse.length);
+          (v.className =
+            "refuse-pile len" +
+            (l.refuse.length < 25 ? l.refuse.length : " all") +
+            (p ? " accordion" : "")),
+            (v.id = "refuse");
+          for (var k = 0; k < l.refuse.length; k++)
+            v.appendChild(
+              h(l.refuse[k], p && k === l.refuse.length - 1 ? " slide" : null)
+            );
+          t.appendChild(v), t.appendChild(n);
+          var $ = document.createElement("div");
+          ($.className = "stacks"), t.appendChild($);
+          var b = 0;
+          for (var N in l.stacks) {
+            b++;
+            var x = document.createElement("div"),
+              E = l.stacks[N],
+              w = i && i.stacks ? i.stacks[N] : null,
+              y = "";
+            w && w.length > E.length
+              ? (y = " contract")
+              : w && w.length < E.length && (y = " expand"),
+              (x.id = "stack" + b),
+              (x.className =
+                "stack len" + E.length + (E.length ? "" : " a") + y);
+            for (var C = 0; C < E.length; C++) {
+              var O = null;
+              w &&
+                C == E.length - 1 &&
+                !E[C].folded &&
+                w[C] &&
+                w[C].folded &&
+                (O = " flipover"),
+                x.appendChild(h(E[C], O));
+            }
+            t.appendChild(x);
+          }
+          e.appendChild(t);
+          var L =
+            -1 === window.navigator.appVersion.indexOf("Phone") &&
+            -1 === window.navigator.appVersion.indexOf("Mobile");
+          f("color"),
+            (e.className = e.className + (L ? " desktop" : " mobile")),
+            document.body.appendChild(e),
+            (document.title =
+              c && l.steps > 0 ? l.steps + " - Solitaire" : "Solitaire");
+        }
+        (window.onhashchange = function (e) {
+          window.history.state &&
+            ((l = window.history.state),
+            m(),
+            u("step1", e.newURL) && u("step2", e.oldURL)
+              ? alert("You have reached the beginning of this game!")
+              : u("step1", e.oldURL) && (window.history.go(-28), o()));
+        }),
+          (window.onresize = function () {
+            c && m();
+          }),
+          document.addEventListener("click", function (e) {
+            if ("startnew" === e.target.id) return _(), !1;
+            if ("new-game" === e.target.id)
+              return (
+                window.confirm("Close this game and start a new one?") && _(),
+                !1
+              );
+            if ("resume-game" === e.target.id) return d(), !1;
+            if ("back-button" === e.target.id) return window.history.back(), !1;
+            if ("color" === e.target.id) {
+              e.preventDefault();
+              var t = e.target.checked ? "dark" : "light";
+              return (document.cookie = "color=" + t), m(), !1;
+            }
+          }),
+          o();
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      .button {
+        display: block;
+        margin: 50px auto;
+        padding: 8px 32px;
+        background-color: #ee9e2d;
+        border-radius: 4px;
+        font-size: 16px;
+        border: none;
+        color: #fff;
+        cursor: pointer;
+        transition: 0.1s all linear;
+        font-family: sans-serif;
+        &:hover {
+          background-color: darken(#ee9e2d, 10%);
+        }
+      }
+      .alert {
+        display: none;
+        margin: 0 auto;
+        width: fit-content;
+        text-align: center;
+        padding: 32px 64px;
+        background-color: #fbe8e4;
+        border: 1px solid #dc2500;
+        font-family: sans-serif;
+        border-radius: 8px;
+        color: #dc2500;
+      }
+    </style>
+  </head>
+  <body>
+    <button class="button" data-button>Click to see an error</button>
+    <div class="alert" data-alert>
+      <h2 class="alert__title">Paradoxal Error</h2>
+      <p class="alert__description">
+        There was an error while trying do display an error.
+      </p>
+    </div>
+    <script>
+      const button = document.querySelector("[data-button]"),
+        alert = document.querySelector("[data-alert]");
+      button.addEventListener("click", () => {
+        alert.style.display = "block";
+      });
+    </script>
+  </body>
+</html>

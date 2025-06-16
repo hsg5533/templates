@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>극적인 Galaxy Spiral & 3D Text</title>
+    <style>
+      /* 기본 스타일 초기화 */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #000;
+        font-family: sans-serif;
+      }
+
+      /* Canvas는 전체 화면에 고정 */
+      canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+        z-index: 0; /* 뒤에 표시 */
+      }
+
+      /* 중앙 3D 텍스트 컨테이너 */
+      .center-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        perspective: 1000px; /* 3D 원근감 */
+        z-index: 10;
+        user-select: none;
+        pointer-events: none;
+      }
+      .text-3d {
+        position: relative;
+        transform-style: preserve-3d;
+        font-size: 4rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        color: #fff;
+        text-align: center;
+        /* 약간의 네온광 */
+        text-shadow: 0 0 5px rgba(255, 255, 255, 0.8),
+          0 0 15px rgba(255, 255, 255, 0.5);
+      }
+      /* 숨겨진 가상 요소로 입체감(두께) 표현 */
+      .text-3d::before {
+        content: attr(data-text);
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        color: rgba(255, 255, 255, 0.2);
+        transform: translateZ(-20px);
+        z-index: -1;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="galaxy"></canvas>
+
+    <!-- 3D 텍스트 -->
+    <div class="center-text">
+      <div class="text-3d" id="rotatingText" data-text="Cosmic Show!">
+        Cosmic Show!
+      </div>
+    </div>
+
+    <script>
+      /*************************************************************
+       * 1) Canvas 은하 스파이럴 스타필드
+       *************************************************************/
+      const canvas = document.getElementById("galaxy");
+      const ctx = canvas.getContext("2d");
+
+      let width = window.innerWidth;
+      let height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
+
+      // 별/입자 정보를 담을 배열
+      let particles = [];
+
+      // 은하 기본 설정
+      const NUM_PARTICLES = 700; // 별(입자) 개수
+      const ARMS = 3; // 은하 팔의 개수
+      let time = 0; // 애니메이션 진행 시간
+
+      // 마우스, 클릭 관련
+      let mouseX = 0,
+        mouseY = 0;
+      let explosion = false;
+
+      // 각 별(입자) 생성 함수
+      function createParticle() {
+        // 각 팔(arm)마다 각도를 나눠서 별을 배치
+        // angle은 0 ~ 2π 범위. 여기에 팔 개수만큼 분산
+        const armIndex = Math.floor(Math.random() * ARMS);
+        // 팔 하나당 분산 각도
+        const armAngle = ((2 * Math.PI) / ARMS) * armIndex;
+
+        // 은하 중심에서의 반지름(얼마나 먼 지점에서 시작할 것인지)
+        // 반지름을 일정 범위로 랜덤. 값이 클수록 중심에서 멀어짐
+        const radius = Math.pow(Math.random(), 1.5) * (width / 2);
+
+        // 입자 색상(파스텔톤)
+        const hue = 200 + Math.random() * 160; // 200~360 사이
+        const saturation = 80 + Math.random() * 20; // 80~100%
+        const lightness = 50 + Math.random() * 20; // 50~70%
+
+        return {
+          // 각 팔 각도 + 반지름에 따라 x, y를 대략 결정
+          // 스파이럴 효과를 위해 각도를 더하거나 빼는 식을 추후에 애니메이션으로 변환
+          angle: armAngle,
+          radius: radius,
+          offsetAngle: Math.random() * 0.5, // 각 입자별 약간씩의 오프셋
+          speed: 0.001 + Math.random() * 0.002, // 회전 속도
+          color: `hsl(${hue}, ${saturation}%, ${lightness}%)`,
+          size: 1 + Math.random() * 2,
+        };
+      }
+
+      // 초기 입자 세팅
+      for (let i = 0; i < NUM_PARTICLES; i++) {
+        particles.push(createParticle());
+      }
+
+      // 은하(별) 그리기
+      function drawGalaxy() {
+        ctx.clearRect(0, 0, width, height);
+
+        for (let p of particles) {
+          // 시간에 따라 스파이럴을 그리는 각도를 조금씩 변화
+          let spiralAngle = p.angle + p.offsetAngle + time * p.speed;
+
+          // 클릭 폭발이 일어나면 반경을 일시적으로 늘려줌
+          let explosionFactor = explosion ? 1 + Math.random() * 2 : 1;
+
+          // 스파이럴 특성: radius에 + (각도에 비례하는 소량)을 추가
+          let spiralRadius = p.radius + spiralAngle * 20 * explosionFactor;
+
+          // 최종 좌표
+          let x = width / 2 + Math.cos(spiralAngle) * spiralRadius;
+          let y = height / 2 + Math.sin(spiralAngle) * spiralRadius;
+
+          // 별 그리기
+          ctx.beginPath();
+          ctx.arc(x, y, p.size, 0, 2 * Math.PI);
+          ctx.fillStyle = p.color;
+          ctx.fill();
+        }
+
+        // 폭발은 한 프레임만 발생시키고 곧바로 false로
+        explosion = false;
+      }
+
+      /*************************************************************
+       * 2) 3D 텍스트 회전(마우스 인터랙션 포함)
+       *************************************************************/
+      const rotatingText = document.getElementById("rotatingText");
+      let rotateX = 0,
+        rotateY = 0;
+
+      // 마우스 움직일 때 회전 각도 변화
+      window.addEventListener("mousemove", (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+
+        // 화면 중앙 기준 -0.5~0.5 범위
+        let relX = mouseX / width - 0.5;
+        let relY = mouseY / height - 0.5;
+
+        // 마우스 위치에 따라 텍스트 X,Y축 회전
+        rotateX = relY * 30; // 위아래
+        rotateY = relX * 60; // 좌우
+      });
+
+      // 마우스 클릭 시 폭발 플래그 트리거
+      window.addEventListener("click", () => {
+        explosion = true;
+      });
+
+      function update3DText() {
+        // 자동 회전 추가 (시간 흐름에 따라 천천히 회전)
+        rotateY += 0.2;
+
+        rotatingText.style.transform = `
+        rotateX(${rotateX}deg) 
+        rotateY(${rotateY}deg)
+        translateZ(0px)
+      `;
+      }
+
+      /*************************************************************
+       * 3) 메인 루프 (requestAnimationFrame)
+       *************************************************************/
+      function animate() {
+        time += 0.5; // 은하 회전 속도(시간 흐름)
+        drawGalaxy(); // 별(은하) 업데이트
+        update3DText(); // 3D 텍스트 업데이트
+        requestAnimationFrame(animate);
+      }
+      animate();
+
+      /*************************************************************
+       * 4) 창 크기 변화 대응
+       *************************************************************/
+      window.addEventListener("resize", () => {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+      });
+    </script>
+  </body>
+</html>

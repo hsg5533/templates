@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        background: #f4f4f4;
+        font-family: Arial, Helvetica, sans-serif;
+        height: 100%;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin: 0;
+        background: linear-gradient(to right, #8f94fb, #4e54c8);
+        padding: 30px;
+      }
+
+      .container {
+        display: flex;
+        padding: 20px;
+        max-width: 100%;
+        width: 800px;
+        background-color: #ffffff10;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        border-radius: 10px;
+      }
+
+      aside {
+        padding: 10px 20px;
+        width: 250px;
+        border-right: 1px solid #fff;
+      }
+
+      button {
+        cursor: pointer;
+        display: block;
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 20px;
+        font-weight: 600;
+        font-size: 15px;
+        color: #fff;
+        background-color: #afb3fc90;
+        border-radius: 7px;
+        backdrop-filter: blur(8.8px);
+        -webkit-backdrop-filter: blur(8.8px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+      }
+
+      button:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+
+      h1 {
+        color: #fff;
+      }
+
+      main {
+        flex: 1;
+        padding: 10px 20px;
+      }
+
+      h2 {
+        border-bottom: 1px solid #fff;
+        padding-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        font-weight: 400;
+        margin: 0 0 20px;
+        color: #fff;
+        font-size: 20px;
+      }
+
+      h3 {
+        background-color: #4e54c870;
+        border-bottom: 1px solid #fff;
+        padding: 10px;
+        display: flex;
+        justify-content: space-between;
+        font-weight: 900;
+        margin: 20px 0 0;
+        color: #fff;
+      }
+
+      .person {
+        color: #fff;
+        display: flex;
+        justify-content: space-between;
+        font-size: 20px;
+        margin-bottom: 10px;
+      }
+    </style>
+    <title>DOM Array Methods</title>
+  </head>
+  <body>
+    <h1>User Wealth List</h1>
+
+    <div class="container">
+      <aside>
+        <button id="add-user">유저 추가하기 👱‍♂️</button>
+        <button id="double">돈 2배 불리기 💰</button>
+        <button id="show-millionaires">백만장자 유저만 보기 💵</button>
+        <button id="sort">부유한 순서대로 정렬하기 ↓</button>
+        <button id="calculate-wealth">재산 총합 계산하기 🧮</button>
+      </aside>
+
+      <main id="main">
+        <h2><strong>User</strong> Wealth</h2>
+      </main>
+    </div>
+    <script>
+      const addUserButton = document.getElementById("add-user");
+      const doubleWealthButton = document.getElementById("double");
+      const showMillsButton = document.getElementById("show-millionaires");
+      const sortButton = document.getElementById("sort");
+      const calcWealthButton = document.getElementById("calculate-wealth");
+
+      const main = document.getElementById("main");
+
+      let users = [];
+
+      async function getRandomUser() {
+        const response = await fetch("https://randomuser.me/api");
+        const data = await response.json();
+        const { first, last } = data.results[0].name;
+
+        const userName = `${first} ${last}`;
+        const userWealth = Math.floor(Math.random() * 1000000);
+
+        addUser({ userName, userWealth });
+      }
+
+      function addUser(user) {
+        users.push(user);
+
+        updateDOM();
+      }
+
+      function setMoneyDouble() {
+        users = users.map((user) => {
+          return { ...user, userWealth: user.userWealth * 2 };
+        });
+
+        updateDOM();
+      }
+
+      function showMillionaires() {
+        users = users.filter((user) => user.userWealth > 1000000);
+
+        updateDOM();
+      }
+
+      function sortByWealth() {
+        users.sort((a, b) => b.userWealth - a.userWealth);
+
+        updateDOM();
+      }
+
+      function calcWealthAndShow() {
+        const sum = users.reduce((total, user) => total + user.userWealth, 0);
+
+        const div = document.createElement("div");
+        div.innerHTML = `<h3>Total Wealth: <strong>${formatWealth(
+          sum
+        )}</strong></h3>`;
+        main.append(div);
+      }
+
+      function updateDOM() {
+        main.innerHTML = "<h2><strong>User</strong> Wealth</h2>";
+
+        main.append(
+          ...users.map((user) => {
+            const div = document.createElement("div");
+            div.className = "person";
+            div.innerHTML = `<strong>${user.userName}</strong> ${formatWealth(
+              user.userWealth
+            )}`;
+
+            return div;
+          })
+        );
+      }
+
+      function formatWealth(wealth) {
+        return wealth.toLocaleString("en-US", {
+          minimumFractionDigits: 2,
+          style: "currency",
+          currency: "USD",
+        });
+      }
+
+      addUserButton.addEventListener("click", getRandomUser);
+      doubleWealthButton.addEventListener("click", setMoneyDouble);
+      showMillsButton.addEventListener("click", showMillionaires);
+      sortButton.addEventListener("click", sortByWealth);
+      calcWealthButton.addEventListener("click", calcWealthAndShow);
+    </script>
+  </body>
+</html>

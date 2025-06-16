@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>이미지 리사이징</title>
+  </head>
+  <body>
+    <input type="file" id="imageInput" accept="image/*" /><br />
+    <canvas id="canvas"></canvas>
+    <script>
+      const imageInput = document.getElementById("imageInput");
+      const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
+
+      imageInput.addEventListener("change", handleImageResize);
+
+      function handleImageResize(event) {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+          const img = new Image();
+          img.onload = function () {
+            const maxWidth = 300; // 원하는 리사이징 폭
+            const maxHeight = 300; // 원하는 리사이징 높이
+            let width = img.width;
+            let height = img.height;
+
+            if (width > height) {
+              if (width > maxWidth) {
+                height *= maxWidth / width;
+                width = maxWidth;
+              }
+            } else {
+              if (height > maxHeight) {
+                width *= maxHeight / height;
+                height = maxHeight;
+              }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            ctx.drawImage(img, 0, 0, width, height);
+          };
+
+          img.src = e.target.result;
+        };
+
+        reader.readAsDataURL(file);
+      }
+    </script>
+  </body>
+</html>

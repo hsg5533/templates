@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <form action="https://formsubmit.co/hsg5533@naver.com" method="POST">
+      <label>전화번호</label><br />
+      <input type="text" name="phone" required /><br /><br />
+
+      <label>문의내용</label><br />
+      <textarea name="inquiry" rows="5" required></textarea><br /><br />
+
+      <!-- 스팸 방지 위해 hidden 필드 등을 설정할 수 있음 -->
+      <input type="hidden" name="_subject" value="새 문의가 도착했습니다." />
+
+      <button type="submit">전송</button>
+    </form>
+  </body>
+</html>

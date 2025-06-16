@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <title>QR 코드 생성기</title>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, user-scalable=no"
+    />
+    <style>
+      /* 전체 스타일링 */
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f0f0;
+        text-align: center;
+        padding: 20px;
+        margin: 0;
+      }
+
+      /* 입력 필드와 버튼 스타일링 */
+      #container {
+        max-width: 620px;
+        margin: auto;
+      }
+
+      #text {
+        width: 70%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+      }
+
+      #generate {
+        padding: 10px 20px;
+        margin: 10px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      #generate:hover {
+        background-color: #0056b3;
+      }
+
+      /* QR 코드 스타일링 */
+      #qr {
+        width: 100%;
+        max-width: 600px;
+        height: 600px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container">
+      <input
+        id="text"
+        type="text"
+        placeholder="QR 코드를 생성하려면 여기에 입력하세요."
+      />
+      <button id="generate">QR 코드 생성</button>
+      <div id="qr"></div>
+    </div>
+    <script src="./js/qr.js"></script>
+    <script>
+      const qr = document.getElementById("qr");
+      const textInput = document.getElementById("text").value;
+      const qrcode = new QRCode(qr, {
+        width: qr.offsetWidth,
+        height: qr.offsetHeight,
+      });
+
+      document
+        .getElementById("generate")
+        .addEventListener("click", () => qrcode.makeCode(textInput));
+      document.getElementById("text").addEventListener("keydown", function (e) {
+        if (e.keyCode === 13) {
+          qrcode.makeCode(textInput);
+        }
+      });
+
+      // 초기 QR 코드 생성
+      qrcode.makeCode(textInput);
+    </script>
+  </body>
+</html>

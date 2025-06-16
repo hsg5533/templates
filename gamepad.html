@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>게이밍 스타일 Xbox 컨트롤러</title>
+    <!-- Google Fonts: Orbitron (게이밍 느낌 폰트) -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* 배경 펄스 애니메이션 (어둡고 미묘한 변화) */
+      @keyframes backgroundPulse {
+        0% {
+          background-color: #000;
+        }
+        50% {
+          background-color: #050505;
+        }
+        100% {
+          background-color: #000;
+        }
+      }
+
+      /* 네온 텍스트 깜빡임 효과 */
+      @keyframes neonFlicker {
+        0%,
+        18%,
+        22%,
+        25%,
+        53%,
+        57%,
+        100% {
+          text-shadow: 0 0 4px #00ffcc, 0 0 11px #00ffcc, 0 0 19px #00ffcc,
+            0 0 40px #00ffcc, 0 0 80px #00ffcc;
+        }
+        20%,
+        24%,
+        55% {
+          text-shadow: none;
+        }
+      }
+
+      /* 페이드 인 애니메이션 (컨트롤러 등장 효과) */
+      @keyframes fadeInController {
+        from {
+          opacity: 0;
+          transform: scale(0.95);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      /* 전체 스타일 */
+      body {
+        margin: 0;
+        padding: 20px;
+        font-family: "Orbitron", sans-serif;
+        text-align: center;
+        animation: backgroundPulse 5s infinite;
+        background: radial-gradient(circle, #000, #050505);
+        color: #f0f0f0;
+        overflow: hidden;
+      }
+
+      h1 {
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+        animation: neonFlicker 1.5s infinite;
+      }
+
+      /* SVG 컨트롤러 스타일 */
+      svg {
+        width: 100%;
+        margin: 20px auto;
+        filter: drop-shadow(0 0 20px #00ffcc);
+        animation: fadeInController 1s ease-out;
+        transition: transform 0.3s ease;
+      }
+      svg:hover {
+        transform: scale(1.05);
+      }
+
+      /* 버튼 활성화 스타일: 네온 글로우 효과 */
+      .active {
+        stroke: #ffeb3b;
+        stroke-width: 5;
+        filter: drop-shadow(0 0 15px #ffeb3b);
+        animation: buttonGlow 0.5s alternate infinite;
+        transition: filter 0.3s, stroke 0.3s;
+      }
+      @keyframes buttonGlow {
+        from {
+          filter: drop-shadow(0 0 10px #ffeb3b);
+        }
+        to {
+          filter: drop-shadow(0 0 20px #ffeb3b);
+        }
+      }
+
+      /* 컨트롤러 외곽 네온 효과 (게이밍 분위기 강화) */
+      #controllerOutline {
+        fill: #1e6774;
+        stroke: #00ffcc;
+        stroke-width: 3;
+        filter: drop-shadow(0 0 10px #00ffcc);
+        opacity: 0.8;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>게이밍 스타일 Xbox 컨트롤러</h1>
+
+    <svg
+      width="580"
+      height="580"
+      viewBox="0 0 580 580"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <!-- 컨트롤러 본체 (네온 외곽선 추가) -->
+      <path
+        id="controllerOutline"
+        d="M484.412 122.54C501.237 135.404 489.51 141.341 505.765 151.733C522.02 162.125 564.567 305.619 564.567 305.619C564.567 305.619 619.984 465.443 521.023 484.739C521.023 484.739 496.782 469.403 475.999 444.66C455.216 419.917 414.64 384.788 392.871 384.292H187.164C165.389 384.788 124.82 419.917 104.036 444.66C83.2587 469.403 59.0107 484.739 59.0107 484.739C-39.9503 465.443 15.4667 305.619 15.4667 305.619C15.4667 305.619 58.0197 162.125 74.2747 151.733C90.5297 141.341 78.8037 135.404 95.6277 122.54C112.451 109.67 180.738 87.9006 192.611 97.7966C204.484 107.693 217.844 109.67 217.844 109.67H362.196C362.196 109.67 375.55 107.693 387.429 97.7966C399.308 87.9006 467.588 109.676 484.412 122.54Z"
+        fill="url(#paint0_linear_3634_14)"
+      />
+
+      <path
+        id="btnLT"
+        d="M258 110H222C220.895 110 220 110.895 220 112V128C220 129.105 220.895 130 222 130H258C259.105 130 260 129.105 260 128V112C260 110.895 259.105 110 258 110Z"
+        fill="url(#paint1_linear_3634_14)"
+      />
+      <path
+        id="btnRT"
+        d="M358 110H322C320.895 110 320 110.895 320 112V128C320 129.105 320.895 130 322 130H358C359.105 130 360 129.105 360 128V112C360 110.895 359.105 110 358 110Z"
+        fill="url(#paint2_linear_3634_14)"
+      />
+
+      <!-- LT/RT 버튼 (LT/RT로 재매핑) -->
+      <path
+        id="btnBack"
+        d="M270 190C275.523 190 280 185.523 280 180C280 174.477 275.523 170 270 170C264.477 170 260 174.477 260 180C260 185.523 264.477 190 270 190Z"
+        fill="url(#paint3_radial_3634_14)"
+      />
+      <path
+        id="btnStart"
+        d="M310 190C315.523 190 320 185.523 320 180C320 174.477 315.523 170 310 170C304.477 170 300 174.477 300 180C300 185.523 304.477 190 310 190Z"
+        fill="url(#paint4_radial_3634_14)"
+      />
+
+      <!-- 범퍼 버튼 -->
+      <path
+        id="btnLB"
+        d="M185 141H145C142.239 141 140 143.239 140 146V156C140 158.761 142.239 161 145 161H185C187.761 161 190 158.761 190 156V146C190 143.239 187.761 141 185 141Z"
+        fill="url(#paint5_radial_3634_14)"
+      />
+      <path
+        id="btnRB"
+        d="M435 141H395C392.239 141 390 143.239 390 146V156C390 158.761 392.239 161 395 161H435C437.761 161 440 158.761 440 156V146C440 143.239 437.761 141 435 141Z"
+        fill="url(#paint6_radial_3634_14)"
+      />
+
+      <!-- 페이스 버튼 -->
+      <path
+        id="btnA"
+        d="M390 260C398.284 260 405 253.284 405 245C405 236.716 398.284 230 390 230C381.716 230 375 236.716 375 245C375 253.284 381.716 260 390 260Z"
+        fill="#00CC00"
+      />
+      <path
+        id="btnB"
+        d="M420 230C428.284 230 435 223.284 435 215C435 206.716 428.284 200 420 200C411.716 200 405 206.716 405 215C405 223.284 411.716 230 420 230Z"
+        fill="#CC0000"
+      />
+      <path
+        id="btnX"
+        d="M360 230C368.284 230 375 223.284 375 215C375 206.716 368.284 200 360 200C351.716 200 345 206.716 345 215C345 223.284 351.716 230 360 230Z"
+        fill="#0066CC"
+      />
+      <path
+        id="btnY"
+        d="M390 200C398.284 200 405 193.284 405 185C405 176.716 398.284 170 390 170C381.716 170 375 176.716 375 185C375 193.284 381.716 200 390 200Z"
+        fill="#CCCC00"
+      />
+
+      <!-- 개별 d‑pad -->
+
+      <path
+        id="dpadUp"
+        d="M235 260H215C212.239 260 210 262.239 210 265V285C210 287.761 212.239 290 215 290H235C237.761 290 240 287.761 240 285V265C240 262.239 237.761 260 235 260Z"
+        fill="url(#paint7_radial_3634_14)"
+      />
+      <path
+        id="dpadDown"
+        d="M235 330H215C212.239 330 210 332.239 210 335V355C210 357.761 212.239 360 215 360H235C237.761 360 240 357.761 240 355V335C240 332.239 237.761 330 235 330Z"
+        fill="url(#paint8_radial_3634_14)"
+      />
+      <path
+        id="dpadLeft"
+        d="M200 295H180C177.239 295 175 297.239 175 300V320C175 322.761 177.239 325 180 325H200C202.761 325 205 322.761 205 320V300C205 297.239 202.761 295 200 295Z"
+        fill="url(#paint9_radial_3634_14)"
+      />
+      <path
+        id="dpadRight"
+        d="M270 295H250C247.239 295 245 297.239 245 300V320C245 322.761 247.239 325 250 325H270C272.761 325 275 322.761 275 320V300C275 297.239 272.761 295 270 295Z"
+        fill="url(#paint10_radial_3634_14)"
+      />
+      <!-- 왼쪽 스틱 -->
+      <path
+        d="M165 255C187.091 255 205 237.091 205 215C205 192.909 187.091 175 165 175C142.909 175 125 192.909 125 215C125 237.091 142.909 255 165 255Z"
+        fill="url(#paint11_radial_3634_14)"
+      />
+      <circle id="leftStickIndicator" cx="165" cy="215" r="15" fill="#666666" />
+
+      <!-- 오른쪽 스틱 -->
+      <path
+        d="M360 350C382.091 350 400 332.091 400 310C400 287.909 382.091 270 360 270C337.909 270 320 287.909 320 310C320 332.091 337.909 350 360 350Z"
+        fill="url(#paint12_radial_3634_14)"
+      />
+
+      <circle
+        id="rightStickIndicator"
+        cx="360"
+        cy="310"
+        r="15"
+        fill="#666666"
+      />
+
+      <defs>
+        <linearGradient
+          id="paint0_linear_3634_14"
+          x1="290.017"
+          y1="95.293"
+          x2="290.017"
+          y2="484.739"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop stop-color="#666666" />
+          <stop offset="1" stop-color="#222222" />
+        </linearGradient>
+        <linearGradient
+          id="paint1_linear_3634_14"
+          x1="220"
+          y1="110"
+          x2="236"
+          y2="142"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop stop-color="#CCCCCC" />
+          <stop offset="1" stop-color="#888888" />
+        </linearGradient>
+        <linearGradient
+          id="paint2_linear_3634_14"
+          x1="320"
+          y1="110"
+          x2="336"
+          y2="142"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop stop-color="#CCCCCC" />
+          <stop offset="1" stop-color="#888888" />
+        </linearGradient>
+        <radialGradient
+          id="paint3_radial_3634_14"
+          cx="0"
+          cy="0"
+          r="1"
+          gradientUnits="userSpaceOnUse"
+          gradientTransform="translate(1260 1170) scale(1000)"
+        >
+          <stop stop-color="white" />
+          <stop offset="1" stop-color="#AAAAAA" />
+        </radialGradient>
+        <radialGradient
+          id="paint4_radial_3634_14"
+          cx="0"
+          cy="0"
+          r="1"
+          gradientUnits="userSpaceOnUse"
+          gradientTransform="translate(1300 1170) scale(1000)"
+        >
+          <stop stop-color="white" />
+          <stop offset="1" stop-color="#AAAAAA" />
+        </radialGradient>
+        <radialGradient
+          id="paint5_radial_3634_14"
+          cx="0"
+          cy="0"
+          r="1"
+          gradientUnits="userSpaceOnUse"
+          gradientTransform="translate(2640 1141) scale(2500 1000)"
+        >
+          <stop stop-color="white" />
+          <stop offset="1" stop-color="#AAAAAA" />
+        </radialGradient>
+        <radialGradient
+          id="paint6_radial_3634_14"
+          cx="0"
+          cy="0"
+          r="1"
+          gradientUnits="userSpaceOnUse"
+          gradientTransform="translate(2890 1141) scale(2500 1000)"
+        >
+          <stop stop-color="white" />
+          <stop offset="1" stop-color="#AAAAAA" />
+        </radialGradient>
+        <radialGradient
+          id="paint7_radial_3634_14"
+          cx="0"
+          cy="0"
+          r="1"
+          gradientUnits="userSpaceOnUse"
+          gradientTransform="translate(3690 3775) scale(3500)"
+        >
+          <stop stop-color="white" />
+          <stop offset="1" stop-color="#AAAAAA" />
+        </radialGradient>
+        <radialGradient
+          id="paint8_radial_3634_14"
+          cx="0"
+          cy="0"
+          r="1"
+          gradientUnits="userSpaceOnUse"
+          gradientTransform="translate(3690 3775) scale(3500)"
+        >
+          <stop stop-color="white" />
+          <stop offset="1" stop-color="#AAAAAA" />
+        </radialGradient>
+        <radialGradient
+          id="paint9_radial_3634_14"
+          cx="0"
+          cy="0"
+          r="1"
+          gradientUnits="userSpaceOnUse"
+          gradientTransform="translate(3690 3775) scale(3500)"
+        >
+          <stop stop-color="white" />
+          <stop offset="1" stop-color="#AAAAAA" />
+        </radialGradient>
+        <radialGradient
+          id="paint10_radial_3634_14"
+          cx="0"
+          cy="0"
+          r="1"
+          gradientUnits="userSpaceOnUse"
+          gradientTransform="translate(3690 3775) scale(3500)"
+        >
+          <stop stop-color="white" />
+          <stop offset="1" stop-color="#AAAAAA" />
+        </radialGradient>
+        <radialGradient
+          id="paint11_radial_3634_14"
+          cx="0"
+          cy="0"
+          r="1"
+          gradientUnits="userSpaceOnUse"
+          gradientTransform="translate(4125 4175) scale(4000)"
+        >
+          <stop stop-color="white" />
+          <stop offset="1" stop-color="#AAAAAA" />
+        </radialGradient>
+        <radialGradient
+          id="paint12_radial_3634_14"
+          cx="0"
+          cy="0"
+          r="1"
+          gradientUnits="userSpaceOnUse"
+          gradientTransform="translate(4320 4270) scale(4000)"
+        >
+          <stop stop-color="white" />
+          <stop offset="1" stop-color="#AAAAAA" />
+        </radialGradient>
+        <clipPath id="clip0_3577_14">
+          <rect width="580" height="580" fill="white" />
+        </clipPath>
+      </defs>
+    </svg>
+
+    <script>
+      // Gamepad API 표준 매핑:
+      // 0: A, 1: B, 2: X, 3: Y, 4: LB, 5: RB, 6: LT, 7: RT, 8: Back, 9: Start,
+      // 10: L 스틱 눌림, 11: R 스틱 눌림, d‑pad: 12 (Up), 13 (Down), 14 (Left), 15 (Right)
+      const buttonMapping = {
+        0: "btnA",
+        1: "btnB",
+        2: "btnX",
+        3: "btnY",
+        4: "btnLB",
+        5: "btnRB",
+        6: "btnLT",
+        7: "btnRT",
+        8: "btnBack",
+        9: "btnStart",
+        10: "leftStickIndicator",
+        11: "rightStickIndicator",
+        12: "dpadUp",
+        13: "dpadDown",
+        14: "dpadLeft",
+        15: "dpadRight",
+      };
+
+      const leftStickCenter = { x: 165, y: 215 };
+      const rightStickCenter = { x: 360, y: 310 };
+      const stickRange = 20;
+
+      function updateGamepadStatus() {
+        const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+        if (!gamepads) {
+          requestAnimationFrame(updateGamepadStatus);
+          return;
+        }
+        for (let i = 0; i < gamepads.length; i++) {
+          const gp = gamepads[i];
+          if (!gp) continue;
+          Object.values(buttonMapping).forEach((id) => {
+            const elem = document.getElementById(id);
+            if (elem) {
+              elem.classList.remove("active");
+            }
+          });
+          gp.buttons.forEach((button, index) => {
+            if (button.pressed) {
+              if (buttonMapping[index] !== undefined) {
+                const elem = document.getElementById(buttonMapping[index]);
+                if (elem) {
+                  elem.classList.add("active");
+                }
+              }
+            }
+          });
+          const leftIndicator = document.getElementById("leftStickIndicator");
+          if (leftIndicator && gp.axes.length >= 2) {
+            const leftX = leftStickCenter.x + gp.axes[0] * stickRange;
+            const leftY = leftStickCenter.y + gp.axes[1] * stickRange;
+            leftIndicator.setAttribute("cx", leftX);
+            leftIndicator.setAttribute("cy", leftY);
+          }
+          const rightIndicator = document.getElementById("rightStickIndicator");
+          if (rightIndicator && gp.axes.length >= 4) {
+            const rightX = rightStickCenter.x + gp.axes[2] * stickRange;
+            const rightY = rightStickCenter.y + gp.axes[3] * stickRange;
+            rightIndicator.setAttribute("cx", rightX);
+            rightIndicator.setAttribute("cy", rightY);
+          }
+        }
+        requestAnimationFrame(updateGamepadStatus);
+      }
+
+      window.addEventListener("gamepadconnected", function (e) {
+        console.log("게임패드 연결:", e.gamepad);
+        updateGamepadStatus();
+      });
+      window.addEventListener("gamepaddisconnected", function (e) {
+        console.log("게임패드 해제:", e.gamepad);
+      });
+      window.addEventListener("load", function () {
+        updateGamepadStatus();
+      });
+    </script>
+  </body>
+</html>

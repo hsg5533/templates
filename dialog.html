@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Document</title>
+    <style>
+      :root {
+        --modal-height: 160px;
+        --modal-padding: 16px;
+      }
+
+      dialog {
+        padding: 0;
+        width: 300px;
+        height: var(--modal-height);
+        border: 0;
+        overflow: hidden;
+      }
+
+      dialog::backdrop {
+        background: rgba(0, 0, 0, 0.5);
+      }
+
+      .show-modal-button {
+        text-align: center;
+      }
+
+      .dialog-container {
+        padding: var(--modal-padding);
+
+        height: calc(var(--modal-height) - var(--modal-padding) * 2);
+      }
+
+      @media (max-width: 600px) {
+        dialog {
+          /* 뷰포트 스크롤이 불가할 시 */
+          margin-top: calc(100vh - var(--modal-height));
+
+          /* 뷰포트 스크롤이 가능할 시 */
+          /* position: sticky; */
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="show-modal-button">
+      <button>show modal</button>
+    </div>
+
+    <dialog>
+      <div class="dialog-container">
+        <h3>This is modal</h3>
+        <span>modal text</span>
+        <form method="dialog">
+          <button>close</button>
+        </form>
+      </div>
+    </dialog>
+    <script>
+      const activeModalButton = document.querySelector("div button");
+      const modal = document.querySelector("dialog");
+
+      activeModalButton.addEventListener("click", (e) => modal.showModal());
+
+      modal.addEventListener("click", (e) => {
+        if (e.target === e.currentTarget) modal.close();
+      });
+    </script>
+  </body>
+</html>

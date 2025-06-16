@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>달력형 일정표 (프로젝트 미선택 시 표시 안 함)</title>
+    <style>
+      /* (디자인 및 레이아웃은 이전과 동일) */
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        display: flex;
+        min-height: 100vh;
+        font-family: "Roboto", sans-serif;
+        background: #f0f0f0;
+      }
+      .sidebar {
+        width: 260px;
+        background: #fff;
+        border-right: 1px solid #ccc;
+        padding: 16px;
+        overflow-y: auto;
+      }
+      .main {
+        flex: 1;
+        padding: 16px;
+        overflow-y: auto;
+        background: #fafafa;
+      }
+      h1,
+      h2 {
+        margin-bottom: 8px;
+      }
+      .project-form,
+      #taskForm {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      input[type="text"],
+      input[type="date"],
+      input[type="color"],
+      input[type="number"] {
+        padding: 6px 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+      button {
+        padding: 6px 12px;
+        border: none;
+        border-radius: 4px;
+        background: #2f80ed;
+        color: #fff;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      button:hover {
+        background: #256abf;
+      }
+      ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      li {
+        margin-bottom: 8px;
+      }
+      /* 프로젝트 목록 */
+      #projectList li {
+        background: #fff;
+        border: 1px solid #eee;
+        padding: 8px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      #projectList li:hover {
+        background: #f5f5f5;
+      }
+      .active {
+        background: #2f80ed !important;
+        color: #fff;
+      }
+
+      /* 달력 영역 */
+      .calendar-container {
+        background: #fff;
+        padding: 16px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        min-height: 200px;
+      }
+      .month-title {
+        font-weight: 600;
+        margin-bottom: 8px;
+        font-size: 1.2rem;
+      }
+      .calendar-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+      }
+      .calendar-table thead th {
+        background: #fafafa;
+        text-align: center;
+        padding: 6px;
+        border-bottom: 1px solid #ccc;
+        font-weight: 500;
+      }
+      .calendar-table td {
+        width: calc(100% / 7);
+        vertical-align: top;
+        height: 90px;
+        border-bottom: 1px solid #eee;
+        border-right: 1px solid #eee;
+        padding: 6px;
+        position: relative;
+      }
+      .calendar-table td:last-child {
+        border-right: none;
+      }
+      .calendar-table tr:last-child td {
+        border-bottom: none;
+      }
+      .day-num {
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+      .empty {
+        background: #f9f9f9;
+      }
+
+      /* 할 일(Task) 배지 디자인 */
+      .task-badge {
+        display: block;
+        margin: 4px 0;
+        padding: 4px 8px;
+        font-size: 0.8rem;
+        color: #fff;
+        border-radius: 12px;
+        background: linear-gradient(145deg, #2f80ed, #56ccf2);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+        position: relative;
+        transition: opacity 0.2s;
+      }
+      .task-badge:hover {
+        opacity: 0.9;
+      }
+      .task-badge[data-color] {
+        background: var(--bg-color, #2f80ed);
+      }
+      .task-badge[data-color]:hover {
+        filter: brightness(0.93);
+      }
+
+      .task-badge[data-tooltip] {
+        cursor: pointer;
+      }
+      .task-badge[data-tooltip]:hover::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        top: -40px;
+        left: 0;
+        transform: translateY(-4px);
+        padding: 6px 10px;
+        font-size: 0.75rem;
+        color: #fff;
+        background: rgba(0, 0, 0, 0.75);
+        border-radius: 4px;
+        pointer-events: none;
+        white-space: nowrap;
+      }
+      .task-badge[data-tooltip]:hover::before {
+        content: "";
+        position: absolute;
+        top: -10px;
+        left: 16px;
+        border: 6px solid transparent;
+        border-bottom-color: rgba(0, 0, 0, 0.75);
+      }
+
+      /* 진행률 바 (옵션) */
+      .progress-bar {
+        margin-top: 4px;
+        width: 100%;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 2px;
+        overflow: hidden;
+      }
+      .progress-bar-inner {
+        height: 100%;
+        background: #ffffff;
+        transition: width 0.2s;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 사이드바 -->
+    <div class="sidebar">
+      <h2>프로젝트</h2>
+      <form class="project-form">
+        <input
+          type="text"
+          id="projectName"
+          placeholder="프로젝트명 입력"
+          required
+        />
+        <button type="submit">추가</button>
+      </form>
+      <ul id="projectList"></ul>
+    </div>
+
+    <!-- 메인 영역 -->
+    <div class="main">
+      <h1 id="selectedProjectTitle">프로젝트를 선택하세요</h1>
+
+      <!-- 할 일 입력 폼 -->
+      <form id="taskForm" style="display: none">
+        <input type="text" id="taskName" placeholder="할 일 이름" required />
+
+        <label>시작일:</label>
+        <input type="date" id="taskStart" required />
+
+        <label>종료일:</label>
+        <input type="date" id="taskEnd" required />
+
+        <label>색상:</label>
+        <input type="color" id="taskColor" value="#2f80ed" />
+
+        <label>진행률:</label>
+        <input
+          type="number"
+          id="taskProgress"
+          value="0"
+          min="0"
+          max="100"
+          step="5"
+          style="width: 70px"
+        />
+
+        <button type="submit">등록</button>
+      </form>
+
+      <!-- 할 일 목록 -->
+      <ul id="taskList"></ul>
+
+      <!-- 달력(간트차트) -->
+      <div class="calendar-container" id="calendarContainer"></div>
+    </div>
+
+    <script>
+      /* === 날짜 함수들 === */
+      function parseLocalDate(dateStr) {
+        const [yyyy, mm, dd] = dateStr.split("-");
+        return new Date(+yyyy, +mm - 1, +dd, 0, 0, 0, 0);
+      }
+      function cloneDate(d) {
+        return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+      }
+      function getMonthDates(year, month) {
+        const dates = [];
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+        let current = cloneDate(firstDay);
+        while (current <= lastDay) {
+          dates.push(cloneDate(current));
+          current.setDate(current.getDate() + 1);
+        }
+        return dates;
+      }
+      function formatYMD(d) {
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, "0");
+        const dd = String(d.getDate()).padStart(2, "0");
+        return `${yyyy}-${mm}-${dd}`;
+      }
+      const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
+
+      /* === 전역 데이터 === */
+      let projects = [];
+      let selectedProjectIndex = -1;
+
+      /* === DOM 요소 === */
+      const projectNameInput = document.getElementById("projectName");
+      const projectList = document.getElementById("projectList");
+      const selectedProjectTitle = document.getElementById(
+        "selectedProjectTitle"
+      );
+
+      const taskForm = document.getElementById("taskForm");
+      const taskNameInput = document.getElementById("taskName");
+      const taskStartInput = document.getElementById("taskStart");
+      const taskEndInput = document.getElementById("taskEnd");
+      const taskColorInput = document.getElementById("taskColor");
+      const taskProgressInput = document.getElementById("taskProgress");
+
+      const taskListEl = document.getElementById("taskList");
+      const calendarContainer = document.getElementById("calendarContainer");
+
+      /* === 렌더링 함수들 === */
+      function renderProjectList() {
+        projectList.innerHTML = projects
+          .map((proj, i) => {
+            const activeClass = i === selectedProjectIndex ? "active" : "";
+            return `<li class="${activeClass}" data-idx="${i}">${proj.name}</li>`;
+          })
+          .join("");
+      }
+
+      function renderTaskList() {
+        // 프로젝트 선택 여부 확인
+        if (selectedProjectIndex < 0) {
+          // 선택 안됐으면 안내만
+          taskListEl.innerHTML = `<li style="color:#888; font-style:italic;">프로젝트를 선택하세요.</li>`;
+          return;
+        }
+        const project = projects[selectedProjectIndex];
+        const tasks = project.tasks || [];
+        if (tasks.length === 0) {
+          taskListEl.innerHTML = "<li>등록된 할 일이 없습니다.</li>";
+          return;
+        }
+        taskListEl.innerHTML = tasks
+          .map(
+            (t) => `
+          <li>
+            <span style="
+              background:${t.color};
+              color:#fff;
+              padding:2px 6px;
+              border-radius:4px;
+              margin-right:6px;
+            ">
+              ${t.name} (${t.progress}%)
+            </span>
+            [${t.start} ~ ${t.end}]
+            <button onclick="editTask('${t.id}')">수정</button>
+          </li>
+        `
+          )
+          .join("");
+      }
+
+      function renderCalendar() {
+        // 프로젝트 선택 안 됐으면 안내만
+        if (selectedProjectIndex < 0) {
+          calendarContainer.innerHTML = `<div style="color:#888; font-style:italic;">프로젝트를 먼저 선택하세요.</div>`;
+          return;
+        }
+
+        const project = projects[selectedProjectIndex];
+        const tasks = project.tasks || [];
+        if (tasks.length === 0) {
+          calendarContainer.innerHTML = `<div>등록된 할 일이 없습니다.</div>`;
+          return;
+        }
+
+        calendarContainer.innerHTML = "";
+        const earliestTime = Math.min(
+          ...tasks.map((t) => parseLocalDate(t.start).getTime())
+        );
+        const latestTime = Math.max(
+          ...tasks.map((t) => parseLocalDate(t.end).getTime())
+        );
+        const earliestDate = new Date(earliestTime);
+        const latestDate = new Date(latestTime);
+
+        let year = earliestDate.getFullYear();
+        let month = earliestDate.getMonth();
+        const endYear = latestDate.getFullYear();
+        const endMonth = latestDate.getMonth();
+
+        while (year < endYear || (year === endYear && month <= endMonth)) {
+          const monthDates = getMonthDates(year, month);
+          const tableHTML = buildMonthTable(year, month, monthDates, tasks);
+          calendarContainer.innerHTML += tableHTML;
+
+          month++;
+          if (month > 11) {
+            month = 0;
+            year++;
+          }
+        }
+      }
+
+      function buildMonthTable(year, month, monthDates, tasks) {
+        const monthName = `${year}년 ${month + 1}월`;
+        const thisMonthFirstDay = new Date(year, month, 1);
+        let html = `
+        <div style="margin-bottom:30px;">
+          <div class="month-title">${monthName}</div>
+          <table class="calendar-table">
+            <thead>
+              <tr>
+                ${WEEKDAYS.map((d) => `<th>${d}</th>`).join("")}
+              </tr>
+            </thead>
+            <tbody>
+      `;
+        const startWeekday = thisMonthFirstDay.getDay();
+        let dayIndex = 0;
+
+        for (let i = 0; i < 6; i++) {
+          let rowHTML = "<tr>";
+          for (let w = 0; w < 7; w++) {
+            if (i === 0 && w < startWeekday) {
+              rowHTML += `<td class="empty"></td>`;
+            } else {
+              const currentDate = monthDates[dayIndex];
+              if (!currentDate) {
+                rowHTML += `<td class="empty"></td>`;
+              } else {
+                const dayNum = currentDate.getDate();
+                const dayTasks = tasks.filter((t) => {
+                  const s = parseLocalDate(t.start);
+                  const e = parseLocalDate(t.end);
+                  return currentDate >= s && currentDate <= e;
+                });
+                // 각 날짜에 해당하는 할 일 표시
+                rowHTML += `
+                <td>
+                  <div class="day-num">${dayNum}</div>
+                  ${dayTasks
+                    .map((t) => {
+                      const tooltip = `${t.name} | ${t.start} ~ ${t.end} | 진행률 ${t.progress}%`;
+                      return `
+                      <div class="task-badge"
+                           data-color="${t.color}"
+                           style="--bg-color: ${t.color};"
+                           data-tooltip="${tooltip}">
+                        ${t.name} (${t.progress}%)
+                        <div class="progress-bar">
+                          <div class="progress-bar-inner" style="width:${t.progress}%;"></div>
+                        </div>
+                      </div>
+                    `;
+                    })
+                    .join("")}
+                </td>
+              `;
+                dayIndex++;
+              }
+            }
+          }
+          rowHTML += "</tr>";
+          html += rowHTML;
+          if (dayIndex >= monthDates.length) break;
+        }
+
+        html += `
+            </tbody>
+          </table>
+        </div>
+      `;
+        return html;
+      }
+
+      /* === 이벤트 및 초기화 === */
+      document
+        .querySelector(".project-form")
+        .addEventListener("submit", (e) => {
+          e.preventDefault();
+          const name = projectNameInput.value.trim();
+          if (!name) return;
+          projects.push({ name, tasks: [] });
+          projectNameInput.value = "";
+          renderProjectList();
+        });
+
+      projectList.addEventListener("click", (e) => {
+        if (e.target.tagName === "LI") {
+          const idx = parseInt(e.target.dataset.idx, 10);
+          selectedProjectIndex = idx;
+          renderProjectList();
+
+          // UI 반영
+          selectedProjectTitle.textContent = `선택된 프로젝트: ${projects[idx].name}`;
+          taskForm.style.display = "flex";
+
+          renderTaskList();
+          renderCalendar();
+        }
+      });
+
+      taskForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        if (selectedProjectIndex < 0) return;
+
+        const name = taskNameInput.value.trim();
+        const start = taskStartInput.value;
+        const end = taskEndInput.value;
+        const color = taskColorInput.value;
+        const progress = parseInt(taskProgressInput.value, 10) || 0;
+
+        if (!name || !start || !end) {
+          alert("할 일 정보를 모두 입력해주세요!");
+          return;
+        }
+        if (start > end) {
+          alert("시작일이 종료일보다 클 수 없습니다.");
+          return;
+        }
+
+        const proj = projects[selectedProjectIndex];
+        proj.tasks.push({
+          id: Date.now().toString(),
+          name,
+          start,
+          end,
+          color,
+          progress,
+        });
+
+        // 폼 초기화
+        taskNameInput.value = "";
+        taskStartInput.value = "";
+        taskEndInput.value = "";
+        taskColorInput.value = "#2f80ed";
+        taskProgressInput.value = "0";
+
+        renderTaskList();
+        renderCalendar();
+      });
+
+      window.editTask = function (taskId) {
+        const proj = projects[selectedProjectIndex];
+        const task = proj.tasks.find((t) => t.id === taskId);
+        if (!task) return;
+
+        // 수정 값 세팅
+        taskNameInput.value = task.name;
+        taskStartInput.value = task.start;
+        taskEndInput.value = task.end;
+        taskColorInput.value = task.color;
+        taskProgressInput.value = task.progress || 0;
+
+        proj.tasks = proj.tasks.filter((t) => t.id !== taskId);
+        renderTaskList();
+        renderCalendar();
+      };
+
+      projects = [
+        {
+          name: "프로젝트 A",
+          tasks: [
+            {
+              id: "1",
+              name: "UI 디자인",
+              start: "2025-02-26",
+              end: "2025-02-28",
+              color: "#F67280",
+              progress: 30,
+            },
+            {
+              id: "2",
+              name: "개발 작업",
+              start: "2025-03-01",
+              end: "2025-03-10",
+              color: "#36CFC9",
+              progress: 50,
+            },
+          ],
+        },
+      ];
+      renderProjectList();
+      renderCalendar(); // 여기도 프로젝트 미선택이면 안내만 표시
+    </script>
+  </body>
+</html>

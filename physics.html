@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no"
+    />
+    <title>Matter.js Example with Physics Targets (Vanilla JS)</title>
+
+    <!-- Matter.js -->
+    <script src="./js/matter.js"></script>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+      }
+
+      .physics {
+        position: absolute;
+        cursor: grab;
+      }
+      .physics:active {
+        cursor: grabbing;
+      }
+      /* 물리엔진 충돌 대상에 physics 클래스를 추가 */
+      .shelf {
+        left: 50%;
+        bottom: 150px;
+        width: 300px;
+        height: 30px;
+        background-color: #964b00;
+      }
+      .shelf2 {
+        position: absolute;
+        left: 20%;
+        width: 300px;
+        height: 30px;
+        background-color: #009632;
+      }
+      .box {
+        left: 10%;
+        width: 300px;
+        height: 300px;
+        background-color: #f3d83c;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- physics 클래스와 static 클래스를 적절히 추가 -->
+    <div class="shelf physics static">선반</div>
+    <div class="shelf2 physics">선반</div>
+    <div class="box physics">박스</div>
+
+    <script>
+      const thickness = 10; // 벽 두께
+
+      // 드래그 기본 동작 방지
+      document.addEventListener("dragstart", (e) => e.preventDefault());
+
+      // Matter.js 엔진과 러너 생성
+      const engine = Matter.Engine.create();
+      const runner = Matter.Runner.create();
+      engine.positionIterations = 10;
+      engine.velocityIterations = 10;
+
+      // 초기 창 크기 구조 분해 할당
+      const { innerWidth, innerHeight } = window;
+
+      // 벽 생성
+      const floor = Matter.Bodies.rectangle(
+        innerWidth / 2,
+        innerHeight + thickness / 2,
+        innerWidth,
+        thickness,
+        { isStatic: true }
+      );
+      const ceiling = Matter.Bodies.rectangle(
+        innerWidth / 2,
+        -thickness / 2,
+        innerWidth,
+        thickness,
+        { isStatic: true }
+      );
+      const leftWall = Matter.Bodies.rectangle(
+        -thickness / 2,
+        innerHeight / 2,
+        thickness,
+        innerHeight,
+        { isStatic: true }
+      );
+      const rightWall = Matter.Bodies.rectangle(
+        innerWidth + thickness / 2,
+        innerHeight / 2,
+        thickness,
+        innerHeight,
+        { isStatic: true }
+      );
+      Matter.Composite.add(engine.world, [floor, ceiling, leftWall, rightWall]);
+
+      // .physics 요소들을 물리 객체로 변환
+      const objects = [];
+      document.querySelectorAll(".physics").forEach((el) => {
+        const rect = el.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        const body = Matter.Bodies.rectangle(
+          centerX,
+          centerY,
+          rect.width,
+          rect.height,
+          { isStatic: el.classList.contains("static") }
+        );
+        Matter.Composite.add(engine.world, body);
+        objects.push({ el, body, width: rect.width, height: rect.height });
+      });
+
+      // 마우스 제어
+      const mouse = Matter.Mouse.create(document.body);
+      const constraint = Matter.MouseConstraint.create(engine, {
+        mouse,
+        constraint: {
+          stiffness: 0.2,
+          angularStiffness: 0.3,
+          render: { visible: false },
+        },
+      });
+      mouse.pixelRatio = 1;
+      Matter.Composite.add(engine.world, constraint);
+
+      // 속도 제한
+      Matter.Events.on(engine, "beforeUpdate", () => {
+        const maxSpeed = 40;
+        objects.forEach((obj) => {
+          if (!obj.body.isStatic) {
+            const { x: vx, y: vy } = obj.body.velocity;
+            const speed = Math.hypot(vx, vy);
+            if (speed > maxSpeed) {
+              const scale = maxSpeed / speed;
+              Matter.Body.setVelocity(obj.body, {
+                x: vx * scale,
+                y: vy * scale,
+              });
+            }
+          }
+        });
+      });
+
+      // 엔진 실행
+      Matter.Runner.run(runner, engine);
+
+      // 애니메이션 프레임 업데이트
+      function update() {
+        objects.forEach(({ el, body, width: w, height: h }) => {
+          if (!el.classList.contains("static")) {
+            el.style.left = `${body.position.x - w / 2}px`;
+            el.style.top = `${body.position.y - h / 2}px`;
+            el.style.transform = `rotate(${body.angle}rad)`;
+          }
+        });
+        requestAnimationFrame(update);
+      }
+      update();
+      // 창 크기 변경 시 벽 & 정적 객체 업데이트
+      window.addEventListener("resize", () => {
+        // 다시 구조 분해 할당
+        const { innerWidth, innerHeight } = window;
+
+        // ceiling
+        Matter.Body.setPosition(ceiling, {
+          x: innerWidth / 2,
+          y: -thickness / 2,
+        });
+        Matter.Body.setVertices(ceiling, [
+          { x: 0, y: 0 },
+          { x: innerWidth, y: 0 },
+          { x: innerWidth, y: thickness },
+          { x: 0, y: thickness },
+        ]);
+
+        // floor
+        Matter.Body.setPosition(floor, {
+          x: innerWidth / 2,
+          y: innerHeight + thickness / 2,
+        });
+        Matter.Body.setVertices(floor, [
+          { x: 0, y: innerHeight },
+          { x: innerWidth, y: innerHeight },
+          { x: innerWidth, y: innerHeight + thickness },
+          { x: 0, y: innerHeight + thickness },
+        ]);
+
+        // leftWall
+        Matter.Body.setPosition(leftWall, {
+          x: -thickness / 2,
+          y: innerHeight / 2,
+        });
+        Matter.Body.setVertices(leftWall, [
+          { x: 0, y: 0 },
+          { x: thickness, y: 0 },
+          { x: thickness, y: innerHeight },
+          { x: 0, y: innerHeight },
+        ]);
+
+        // rightWall
+        Matter.Body.setPosition(rightWall, {
+          x: innerWidth + thickness / 2,
+          y: innerHeight / 2,
+        });
+        Matter.Body.setVertices(rightWall, [
+          { x: innerWidth, y: 0 },
+          { x: innerWidth + thickness, y: 0 },
+          { x: innerWidth + thickness, y: innerHeight },
+          { x: innerWidth, y: innerHeight },
+        ]);
+
+        // 정적 객체 업데이트
+        objects.forEach((obj) => {
+          if (obj.body.isStatic) {
+            const rect = obj.el.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            Matter.Body.setPosition(obj.body, { x: centerX, y: centerY });
+            Matter.Body.setVertices(obj.body, [
+              { x: rect.left, y: rect.top },
+              { x: rect.left + rect.width, y: rect.top },
+              { x: rect.left + rect.width, y: rect.top + rect.height },
+              { x: rect.left, y: rect.top + rect.height },
+            ]);
+            obj.width = rect.width;
+            obj.height = rect.height;
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
